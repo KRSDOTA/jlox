@@ -1,22 +1,23 @@
 package org.example.jloxrunner;
 
+import org.example.errorhandler.JLoxErrorHandler;
+import org.example.errorhandler.JLoxInterpreterErrorHandler;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Scanner;
+import java.util.stream.Stream;
 
 public class JLoxRepelRunner implements JLoxRunner {
 
     private final InputStreamReader input = new InputStreamReader(System.in);
     private final BufferedReader reader = new BufferedReader(input);
 
-    public JLoxRepelRunner() {
-
-    }
-
-    public void runPrompt() throws IOException {
+    public void runInterpreterPrompt() throws IOException {
         for (;;) {
             System.out.println("> ");
             final String line = reader.readLine();
@@ -30,8 +31,10 @@ public class JLoxRepelRunner implements JLoxRunner {
         run(new String(bytes, Charset.defaultCharset()));
     }
 
-    public void run(String s) {
-
+    public void run(String source) {
+        final Scanner scanner = new Scanner(source);
+        final Stream<String> tokens = scanner.tokens();
+        tokens.forEach(System.out::println);
     }
 
 }

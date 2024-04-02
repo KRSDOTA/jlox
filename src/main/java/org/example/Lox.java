@@ -5,7 +5,7 @@ import org.example.jloxrunner.JLoxRunner;
 
 import java.io.IOException;
 
-public class Main {
+public class Lox {
 
     private static final JLoxRunner jLoxRunner = new JLoxRepelRunner();
 
@@ -15,7 +15,7 @@ public class Main {
         } else if(args.length == 1){
             jLoxRunner.runFile(args[0]);
         } else {
-            jLoxRunner.runPrompt();
+            jLoxRunner.runInterpreterPrompt();
         }
 
     }
