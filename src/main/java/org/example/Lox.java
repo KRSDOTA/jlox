@@ -1,13 +1,13 @@
 package org.example;
 
-import org.example.jloxrunner.JLoxRepelRunner;
+import org.example.jloxrunner.Runner;
 import org.example.jloxrunner.JLoxRunner;
 
 import java.io.IOException;
 
 public class Lox {
 
-    private static final JLoxRunner jLoxRunner = new JLoxRepelRunner();
+    private static final JLoxRunner jLoxRunner = new Runner();
 
     public static void main(String[] args) throws IOException {
         if(args.length > 1){

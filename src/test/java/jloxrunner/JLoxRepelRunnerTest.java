@@ -1,11 +1,11 @@
 package jloxrunner;
 
-import org.example.jloxrunner.JLoxRepelRunner;
+import org.example.jloxrunner.Runner;
 import org.junit.jupiter.api.Test;
 
 public class JLoxRepelRunnerTest {
 
-    final JLoxRepelRunner jLoxRepelRunner = new JLoxRepelRunner();
+    final Runner jLoxRepelRunner = new Runner();
 
     @Test
     void shouldRunPrompt() {

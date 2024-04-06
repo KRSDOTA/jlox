@@ -1,8 +1,5 @@
 package org.example.jloxrunner;
 
-import org.example.errorhandler.JLoxErrorHandler;
-import org.example.errorhandler.JLoxInterpreterErrorHandler;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -12,7 +9,7 @@ import java.nio.file.Paths;
 import java.util.Scanner;
 import java.util.stream.Stream;
 
-public class JLoxRepelRunner implements JLoxRunner {
+public class Runner implements JLoxRunner {
 
     private final InputStreamReader input = new InputStreamReader(System.in);
     private final BufferedReader reader = new BufferedReader(input);
