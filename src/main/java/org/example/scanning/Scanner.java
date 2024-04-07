@@ -62,21 +62,17 @@ public class Scanner {
       }
       case '\n' -> line++;
       case '"' -> string();
-      default -> jLoxErrorHandler.reportError(line, String.format("Unexpected character %s passed", c));
+      default -> {
+        if (isDigit(c)) {
+          number();
+        }
+        else if(isAlpha(c)) {
+          identifier();
+        } else {
+          jLoxErrorHandler.reportError(line, String.format("Unexpected character %s passed", c));
+        }
+      }
     }
-  }
-
-  private char advance() {
-    return source.charAt(current++);
-  }
-
-  private void addToken(TokenType tokenType) {
-    addToken(tokenType, null);
-  }
-
-  private void addToken(TokenType tokenType, Object literal) {
-    String text = source.substring(start, current);
-    tokens.add(new Token(tokenType, text, literal, line));
   }
 
   private boolean match(char expected) {
@@ -90,6 +86,39 @@ public class Scanner {
   private char peek() {
     if (isAtEnd()) return '\0'; // Null value in ASCII!
     return source.charAt(current);
+  }
+
+  private void number() {
+    while (isDigit(peek())) advance();
+
+    if (peek() == '.' && isDigit(peekNext())) {
+      advance();
+      while (isDigit(peek())) advance();
+    }
+
+    addToken(NUMBER, Double.parseDouble(source.substring(start, current)));
+  }
+
+  private char peekNext() {
+    if (current + 1 >= source.length()) return '\0';
+    return source.charAt(current + 1);
+  }
+
+  private boolean isDigit(char c) {
+    return c >= '0' && c <= '9';
+  }
+
+  private char advance() {
+    return source.charAt(current++);
+  }
+
+  private void addToken(TokenType tokenType) {
+    addToken(tokenType, null);
+  }
+
+  private void addToken(TokenType tokenType, Object literal) {
+    String text = source.substring(start, current);
+    tokens.add(new Token(tokenType, text, literal, line));
   }
 
   private void string() {
@@ -108,5 +137,19 @@ public class Scanner {
     addToken(STRING, value);
   }
 
+  private boolean isAlpha(char c) {
+    return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_';
+  }
+
+  private void identifier() {
+    while (isAlphaNumeric(peek())) advance();
+
+    final String text = source.substring(start, current);
+    if(ReservedWords.keywords.get(text) == null) addToken(IDENTIFIER);
+  }
+
+  private boolean isAlphaNumeric(char c) {
+    return isAlpha(c) || isDigit(c);
+  }
 
 }
