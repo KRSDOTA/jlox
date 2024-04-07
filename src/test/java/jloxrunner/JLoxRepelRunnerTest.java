@@ -5,21 +5,21 @@ import org.junit.jupiter.api.Test;
 
 public class JLoxRepelRunnerTest {
 
-    final Runner jLoxRepelRunner = new Runner();
+  final Runner jLoxRepelRunner = new Runner();
 
-    @Test
-    void shouldRunPrompt() {
+  @Test
+  void shouldRunPrompt() {
 
-    }
+  }
 
-    @Test
-    void shouldRunWhenRunningValidFile() {
+  @Test
+  void shouldRunWhenRunningValidFile() {
 
-    }
+  }
 
-    @Test
-    void shouldThrowExceptionWhenRunningInvalidFile() {
+  @Test
+  void shouldThrowExceptionWhenRunningInvalidFile() {
 
-    }
+  }
 
 }

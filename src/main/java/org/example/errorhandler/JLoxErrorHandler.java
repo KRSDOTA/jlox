@@ -1,9 +1,9 @@
 package org.example.errorhandler;
 
 public interface JLoxErrorHandler {
-    void reportError(int line, String message);
+  void reportError(int line, String message);
 
-    boolean hadError();
+  boolean hadError();
 
-    public void resetError();
+  public void resetError();
 }
