@@ -47,6 +47,21 @@ public class Scanner {
       case '+' -> addToken(PLUS);
       case ';' -> addToken(SEMICOLON);
       case '*' -> addToken(STAR);
+      case '!' -> addToken(match('=') ? BANG_EQUAL : BANG);
+      case '=' -> addToken(match('=') ? EQUAL_EQUAL : EQUAL);
+      case '<' -> addToken(match('=') ? LESS_EQUAL : LESS);
+      case '>' -> addToken(match('=') ? GREATER_EQUAL : GREATER);
+      case '/' -> {
+        if (match('/')) {
+          while (peek() != '\n' && !isAtEnd()) advance();
+        } else {
+          addToken(SLASH);
+        }
+      }
+      case ' ', 'r', '\t' -> {
+      }
+      case '\n' -> line++;
+      case '"' -> string();
       default -> jLoxErrorHandler.reportError(line, String.format("Unexpected character %s passed", c));
     }
   }
@@ -63,5 +78,35 @@ public class Scanner {
     String text = source.substring(start, current);
     tokens.add(new Token(tokenType, text, literal, line));
   }
+
+  private boolean match(char expected) {
+    if (isAtEnd()) return false;
+    if (source.charAt(current) != expected) return false;
+
+    current++;
+    return true;
+  }
+
+  private char peek() {
+    if (isAtEnd()) return '\0'; // Null value in ASCII!
+    return source.charAt(current);
+  }
+
+  private void string() {
+    while (peek() != '"' && !isAtEnd()) {
+      if (peek() == '\n') line++;
+      advance();
+    }
+    if (isAtEnd()) {
+      jLoxErrorHandler.reportError(line, "Unterminated String");
+      return;
+    }
+
+    advance();
+
+    String value = source.substring(start + 1, current - 1);
+    addToken(STRING, value);
+  }
+
 
 }

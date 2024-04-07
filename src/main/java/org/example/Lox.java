@@ -17,6 +17,5 @@ public class Lox {
     } else {
       jLoxRunner.runInterpreterPrompt();
     }
-
   }
 }

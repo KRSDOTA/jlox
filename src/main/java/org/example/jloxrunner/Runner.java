@@ -1,5 +1,9 @@
 package org.example.jloxrunner;
 
+import org.example.errorhandler.JLoxErrorHandler;
+import org.example.errorhandler.JLoxInterpreterErrorHandler;
+import org.example.scanning.Token;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -13,6 +17,8 @@ public class Runner implements JLoxRunner {
 
   private final InputStreamReader input = new InputStreamReader(System.in);
   private final BufferedReader reader = new BufferedReader(input);
+
+  private final JLoxErrorHandler jLoxErrorHandler = new JLoxInterpreterErrorHandler();
 
   public void runInterpreterPrompt() throws IOException {
     for (; ; ) {
@@ -29,8 +35,9 @@ public class Runner implements JLoxRunner {
   }
 
   public void run(String source) {
-    final Scanner scanner = new Scanner(source);
-    final Stream<String> tokens = scanner.tokens();
+//    final Scanner scanner = new Scanner(source);
+    final org.example.scanning.Scanner scanner = new org.example.scanning.Scanner(source, jLoxErrorHandler);
+    final Stream<Token> tokens = scanner.scanTokens().stream();
     tokens.forEach(System.out::println);
   }
 
