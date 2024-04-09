@@ -145,7 +145,9 @@ public class Scanner {
     while (isAlphaNumeric(peek())) advance();
 
     final String text = source.substring(start, current);
-    if(ReservedWords.keywords.get(text) == null) addToken(IDENTIFIER);
+    TokenType type = ReservedWords.keywords.get(text);
+    if(type == null) type = IDENTIFIER;
+    addToken(type);
   }
 
   private boolean isAlphaNumeric(char c) {
