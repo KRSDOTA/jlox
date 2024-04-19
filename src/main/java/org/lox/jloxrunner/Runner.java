@@ -1,9 +1,9 @@
-package org.example.jloxrunner;
+package org.lox.jloxrunner;
 
-import org.example.errorhandler.JLoxErrorHandler;
-import org.example.errorhandler.JLoxInterpreterErrorHandler;
-import org.example.scanning.Scanner;
-import org.example.scanning.Token;
+import org.lox.errorhandler.JLoxErrorHandler;
+import org.lox.errorhandler.JLoxInterpreterErrorHandler;
+import org.lox.scanning.Scanner;
+import org.lox.scanning.Token;
 
 import java.io.BufferedReader;
 import java.io.IOException;

@@ -1,9 +1,9 @@
-package org.example.scanning;
+package org.lox.scanning;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.example.scanning.TokenType.*;
+import static org.lox.scanning.TokenType.*;
 
 public class ReservedWords {
 

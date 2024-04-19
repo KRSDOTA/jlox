@@ -1,4 +1,4 @@
-package org.example.scanning;
+package org.lox.scanning;
 
 public enum TokenType {
   // Single-character tokens.

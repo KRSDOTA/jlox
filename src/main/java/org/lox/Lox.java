@@ -1,7 +1,7 @@
-package org.example;
+package org.lox;
 
-import org.example.jloxrunner.Runner;
-import org.example.jloxrunner.JLoxRunner;
+import org.lox.jloxrunner.Runner;
+import org.lox.jloxrunner.JLoxRunner;
 
 import java.io.IOException;
 

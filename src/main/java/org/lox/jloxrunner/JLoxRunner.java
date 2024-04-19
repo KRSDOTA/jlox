@@ -1,4 +1,4 @@
-package org.example.jloxrunner;
+package org.lox.jloxrunner;
 
 import java.io.IOException;
 

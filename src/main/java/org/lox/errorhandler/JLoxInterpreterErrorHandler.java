@@ -1,4 +1,4 @@
-package org.example.errorhandler;
+package org.lox.errorhandler;
 
 public class JLoxInterpreterErrorHandler implements JLoxErrorHandler {
 

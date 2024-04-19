@@ -1,4 +1,4 @@
-package org.example.scanning;
+package org.lox.scanning;
 
 public record Token(TokenType tokenType, String lexeme, Object literal, int line) {
 

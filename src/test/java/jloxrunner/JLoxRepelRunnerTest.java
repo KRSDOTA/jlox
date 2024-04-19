@@ -1,6 +1,6 @@
 package jloxrunner;
 
-import org.example.jloxrunner.Runner;
+import org.lox.jloxrunner.Runner;
 import org.junit.jupiter.api.Test;
 
 public class JLoxRepelRunnerTest {

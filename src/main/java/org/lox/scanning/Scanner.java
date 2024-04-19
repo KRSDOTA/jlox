@@ -1,11 +1,11 @@
-package org.example.scanning;
+package org.lox.scanning;
 
-import org.example.errorhandler.JLoxErrorHandler;
+import org.lox.errorhandler.JLoxErrorHandler;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.example.scanning.TokenType.*;
+import static org.lox.scanning.TokenType.*;
 
 public class Scanner {
 
@@ -65,8 +65,7 @@ public class Scanner {
       default -> {
         if (isDigit(c)) {
           number();
-        }
-        else if(isAlpha(c)) {
+        } else if (isAlpha(c)) {
           identifier();
         } else {
           jLoxErrorHandler.reportError(line, String.format("Unexpected character %s passed", c));
@@ -76,15 +75,21 @@ public class Scanner {
   }
 
   private boolean match(char expected) {
-    if (isAtEnd()) return false;
-    if (source.charAt(current) != expected) return false;
+    if (isAtEnd()) {
+      return false;
+    }
+    if (source.charAt(current) != expected) {
+      return false;
+    }
 
     current++;
     return true;
   }
 
   private char peek() {
-    if (isAtEnd()) return '\0'; // Null value in ASCII!
+    if (isAtEnd()) {
+      return '\0'; // Null value in ASCII!
+    }
     return source.charAt(current);
   }
 
@@ -100,7 +105,9 @@ public class Scanner {
   }
 
   private char peekNext() {
-    if (current + 1 >= source.length()) return '\0';
+    if (current + 1 >= source.length()) {
+      return '\0';
+    }
     return source.charAt(current + 1);
   }
 
@@ -146,7 +153,7 @@ public class Scanner {
 
     final String text = source.substring(start, current);
     TokenType type = ReservedWords.keywords.get(text);
-    if(type == null) type = IDENTIFIER;
+    if (type == null) type = IDENTIFIER;
     addToken(type);
   }
 

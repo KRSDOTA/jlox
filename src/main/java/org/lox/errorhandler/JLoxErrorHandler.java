@@ -1,4 +1,4 @@
-package org.example.errorhandler;
+package org.lox.errorhandler;
 
 public interface JLoxErrorHandler {
   void reportError(int line, String message);
