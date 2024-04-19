@@ -1,8 +1,8 @@
 package org.lox.abstractsyntaxtree;
 
-import org.lox.vistor.Visitor;
+import org.lox.vistor.ExpressionVisitor;
 
 public abstract class Expression {
 
-  abstract <T> T accept(Visitor<T> visitor);
+  public abstract <T> T accept(ExpressionVisitor<T> expressionVisitor);
 }

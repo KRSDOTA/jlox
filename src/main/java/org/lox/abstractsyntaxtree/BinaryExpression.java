@@ -1,7 +1,7 @@
 package org.lox.abstractsyntaxtree;
 
 import org.lox.scanning.Token;
-import org.lox.vistor.Visitor;
+import org.lox.vistor.ExpressionVisitor;
 
 public class BinaryExpression extends Expression {
 
@@ -18,7 +18,20 @@ public class BinaryExpression extends Expression {
   }
 
   @Override
-  <T> T accept(Visitor<T> visitor) {
-    return visitor.visitBinaryExpr(this);
+  public <T> T accept(ExpressionVisitor<T> expressionVisitor) {
+    return expressionVisitor.visitBinaryExpr(this);
   }
+
+  public Expression getLeftHandExpression() {
+    return leftHandExpression;
+  }
+
+  public Token getOperator() {
+    return operator;
+  }
+
+  public Expression getRightHandExpression() {
+    return rightHandExpression;
+  }
+
 }

@@ -1,6 +1,6 @@
 package org.lox.abstractsyntaxtree;
 
-import org.lox.vistor.Visitor;
+import org.lox.vistor.ExpressionVisitor;
 
 public class LiteralExpression extends Expression {
 
@@ -10,8 +10,12 @@ public class LiteralExpression extends Expression {
     this.value = value;
   }
 
+  public Object getValue() {
+    return value;
+  }
+
   @Override
-  <T> T accept(Visitor<T> visitor) {
-    return visitor.visitLiteralExpr(this);
+  public <T> T accept(ExpressionVisitor<T> expressionVisitor) {
+    return expressionVisitor.visitLiteralExpr(this);
   }
 }

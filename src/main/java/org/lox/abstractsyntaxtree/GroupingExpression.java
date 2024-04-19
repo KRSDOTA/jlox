@@ -1,6 +1,6 @@
 package org.lox.abstractsyntaxtree;
 
-import org.lox.vistor.Visitor;
+import org.lox.vistor.ExpressionVisitor;
 
 public class GroupingExpression extends Expression {
   final Expression groupedExpression;
@@ -9,8 +9,12 @@ public class GroupingExpression extends Expression {
     this.groupedExpression = groupedExpression;
   }
 
+  public Expression getGroupedExpression() {
+    return groupedExpression;
+  }
+
   @Override
-  <T> T accept(Visitor<T> visitor) {
-    return visitor.visitGroupingExpr(this);
+  public <T> T accept(ExpressionVisitor<T> expressionVisitor) {
+    return expressionVisitor.visitGroupingExpr(this);
   }
 }

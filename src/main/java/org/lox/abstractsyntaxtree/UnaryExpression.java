@@ -1,7 +1,7 @@
 package org.lox.abstractsyntaxtree;
 
 import org.lox.scanning.Token;
-import org.lox.vistor.Visitor;
+import org.lox.vistor.ExpressionVisitor;
 
 public class UnaryExpression extends Expression {
   private final Token operator;
@@ -13,8 +13,17 @@ public class UnaryExpression extends Expression {
     this.rightHandExpression = rightHandExpression;
   }
 
-  @Override
-  <T> T accept(Visitor<T> visitor) {
-    return visitor.visitUnaryExpr(this);
+  public Token getOperator() {
+    return operator;
   }
+
+  public Expression getRightHandExpression() {
+    return rightHandExpression;
+  }
+
+  @Override
+  public <T> T accept(ExpressionVisitor<T> expressionVisitor) {
+    return expressionVisitor.visitUnaryExpr(this);
+  }
+
 }

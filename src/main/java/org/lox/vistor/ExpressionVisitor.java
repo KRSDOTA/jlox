@@ -5,7 +5,7 @@ import org.lox.abstractsyntaxtree.GroupingExpression;
 import org.lox.abstractsyntaxtree.LiteralExpression;
 import org.lox.abstractsyntaxtree.UnaryExpression;
 
-public interface Visitor<T> {
+public interface ExpressionVisitor<T> {
   T visitBinaryExpr(BinaryExpression expr);
   T visitGroupingExpr(GroupingExpression expr);
   T visitLiteralExpr(LiteralExpression expr);
