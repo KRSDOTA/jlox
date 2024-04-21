@@ -32,5 +32,3 @@ protein   → "really"+ "crispy" "bacon"
           | ( "scrambled" | "poached" | "fried" ) "eggs" ;
 
 bread     → "toast" | "biscuits" | "English muffin" ;
-
-

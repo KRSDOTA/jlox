@@ -4,8 +4,8 @@ import org.lox.abstractsyntaxtree.*;
 
 public class AstPrinter implements ExpressionVisitor<String> {
 
-  public String printTree(Expression expr) {
-    return expr.accept(this);
+  public String printTree(Expression expression) {
+    return expression.accept(this);
   }
   @Override
   public String visitBinaryExpr(BinaryExpression expr) {
