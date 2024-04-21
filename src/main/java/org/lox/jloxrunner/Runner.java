@@ -29,11 +29,15 @@ public class Runner implements JLoxRunner {
 
   public void runInterpreterPrompt() throws IOException {
     final Token multiply = new Token(TokenType.STAR, "*", null, 10);
-    final Token literal1 = new Token(TokenType.NUMBER, "10", 10, 9);
-    final Token literal2 = new Token(TokenType.NUMBER, "20", 20, 11);
+    final Token plus = new Token(TokenType.PLUS, "+", null, 10);
+
     final LiteralExpression literalExpression1 = new LiteralExpression(10);
     final LiteralExpression literalExpression2 = new LiteralExpression(20);
-    final BinaryExpression binaryExpression = new BinaryExpression(literalExpression1, multiply, literalExpression2);
+    final LiteralExpression literalExpression3 = new LiteralExpression(15);
+    final LiteralExpression literalExpression4 = new LiteralExpression(30);
+
+    final BinaryExpression addExpression = new BinaryExpression(literalExpression3, plus, literalExpression4);
+    final BinaryExpression binaryExpression = new BinaryExpression(addExpression, multiply, literalExpression2);
     System.out.println(reversePolishNotationVisitor.visitBinaryExpr(binaryExpression));
   }
 

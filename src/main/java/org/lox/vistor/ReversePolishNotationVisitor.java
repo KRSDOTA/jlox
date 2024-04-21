@@ -23,7 +23,7 @@ public class ReversePolishNotationVisitor implements ExpressionVisitor<String> {
 
   @Override
   public String visitGroupingExpr(GroupingExpression expr) {
-    return null;
+    return expr.accept(this);
   }
 
   @Override
@@ -33,6 +33,9 @@ public class ReversePolishNotationVisitor implements ExpressionVisitor<String> {
 
   @Override
   public String visitUnaryExpr(UnaryExpression expr) {
-    return null;
+    final StringBuilder unaryExpression = new StringBuilder();
+    unaryExpression.append(expr.getRightHandExpression().accept(this));
+    unaryExpression.append(expr.getOperator().lexeme());
+    return unaryExpression.toString();
   }
 }
