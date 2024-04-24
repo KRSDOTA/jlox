@@ -1,6 +1,8 @@
 package org.lox.parser;
 
 import org.lox.abstractsyntaxtree.*;
+import org.lox.errorhandler.JLoxErrorHandler;
+import org.lox.errorhandler.JLoxParserErrorHandler;
 import org.lox.scanning.Token;
 import org.lox.scanning.TokenType;
 
@@ -10,8 +12,13 @@ import static org.lox.scanning.TokenType.*;
 
 public class Parser {
 
+  private static class ParseError extends RuntimeException {
+  }
+
   private final static TokenType[] EQUALITY_OPERATORS = new TokenType[]{BANG_EQUAL, EQUAL_EQUAL};
   private final static TokenType[] INEQUALITY_OPERATORS = new TokenType[]{GREATER, GREATER_EQUAL, LESS, LESS_EQUAL};
+
+  private final JLoxErrorHandler jLoxErrorHandler = new JLoxParserErrorHandler();
 
   private final List<Token> tokens;
   private int current = 0;
@@ -20,16 +27,57 @@ public class Parser {
     this.tokens = tokens;
   }
 
-  public Expression expression() {
-    Expression expression = comparison();
+  /**
+   * Parse the tokens assigned to the class
+   * @return full parsed AST
+   */
+  public Expression parse() {
+    try {
+      return expression();
+    } catch (ParseError error) {
+      return null;
+    }
+  }
+
+  public boolean hadError() {
+    return jLoxErrorHandler.hadError();
+  }
+
+  private Expression expression() {
+   Expression leftBlockExpression = conditional();
+
+   while(matchUnconsumedToken(COMMA)) {
+      final Token operator = consumeToken();
+      final Expression rightBlockExpression = conditional();
+      leftBlockExpression = new BinaryExpression(leftBlockExpression, operator,  rightBlockExpression);
+    }
+   
+    return leftBlockExpression;
+  }
+
+  private Expression conditional(){
+    Expression conditionalExpression = equality();
+    if(matchUnconsumedToken(QUESTION)){
+       consumeToken();
+       Expression thenBranch = expression();
+       consumeIfTokenMatchOtherwiseError(TokenType.COLON, "Expected ':' after then branch of conditional expression");
+       Expression elseBranch = conditional();
+       conditionalExpression = new ConditionalExpression(conditionalExpression, thenBranch, elseBranch);
+    }
+
+    return conditionalExpression;
+  }
+
+  private Expression equality() {
+    Expression leftAssociativeTree = comparison();
 
     while (matchUnconsumedToken(EQUALITY_OPERATORS)) {
       final Token operator = consumeToken();
-      final Expression right = comparison();
-      expression = new BinaryExpression(expression, operator, right);
+      final Expression rightTree = comparison();
+      leftAssociativeTree = new BinaryExpression(leftAssociativeTree, operator, rightTree);
     }
 
-    return expression;
+    return leftAssociativeTree;
   }
 
   private Expression comparison() {
@@ -80,14 +128,17 @@ public class Parser {
 
   private Expression primary() {
     if (matchUnconsumedToken(FALSE)) {
+      consumeToken();
       return new LiteralExpression(false);
     }
 
     if (matchUnconsumedToken(TRUE)) {
+      consumeToken();
       return new LiteralExpression(true);
     }
 
     if (matchUnconsumedToken(NIL)) {
+      consumeToken();
       return new LiteralExpression(null);
     }
 
@@ -95,15 +146,51 @@ public class Parser {
       return new LiteralExpression(consumeToken().literal());
     }
 
-    if(matchUnconsumedToken(LEFT_PAREN)) {
+    if (matchUnconsumedToken(LEFT_PAREN)) {
       Expression expression = expression();
-//      consume(RIGHT_PAREN, "Expect ')' after expression.");
+      consumeIfTokenMatchOtherwiseError(RIGHT_PAREN, "Expect ')' after expression.");
       return new GroupingExpression(expression);
     }
 
-    throw new Error("Lol");
+    throw error(tokens.get(current), "Expected an expression");
   }
 
+  private void synchronise() {
+    consumeToken();
+
+    while (!isAtEndOfTokenStream()) {
+      if (mostRecentlyConsumedToken().tokenType() == SEMICOLON) {
+        return;
+      }
+      switch (tokens.get(current).tokenType()) {
+        case CLASS:
+        case FUN:
+        case VAR:
+        case FOR:
+        case IF:
+        case WHILE:
+        case PRINT:
+        case RETURN:
+          return;
+      }
+
+    }
+
+    consumeToken();
+  }
+
+  private Token consumeIfTokenMatchOtherwiseError(TokenType tokenType, String message) {
+    if (doesNextTokenMatch(tokenType)) {
+      return consumeToken();
+    }
+
+    throw error(this.tokens.get(current), message);
+  }
+
+  private ParseError error(Token token, String message) {
+    jLoxErrorHandler.reportError(token, message);
+    return new ParseError();
+  }
 
   private boolean matchUnconsumedToken(TokenType... types) {
     for (TokenType type : types) {

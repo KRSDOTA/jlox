@@ -29,6 +29,11 @@ public class AstPrinter implements ExpressionVisitor<String> {
     return parenthesize(expr.getOperator().lexeme(), expr.getRightHandExpression());
   }
 
+  @Override
+  public String visitConditionalExpr(ConditionalExpression expr) {
+    return parenthesize("group", expr.getExpression(), expr.getThenBranch(), expr.getElseBranch());
+  }
+
   private String parenthesize(String name, Expression... exprs) {
     StringBuilder builder = new StringBuilder();
 

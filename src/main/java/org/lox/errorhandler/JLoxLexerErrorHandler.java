@@ -1,6 +1,8 @@
 package org.lox.errorhandler;
 
-public class JLoxInterpreterErrorHandler implements JLoxErrorHandler {
+import org.lox.scanning.Token;
+
+public class JLoxLexerErrorHandler implements JLoxErrorHandler {
 
   private boolean hadError = false;
 
@@ -14,6 +16,11 @@ public class JLoxInterpreterErrorHandler implements JLoxErrorHandler {
 
   public void reportError(int line, String message) {
     report(line, "", message);
+  }
+
+  @Override
+  public void reportError(Token token, String message) {
+
   }
 
   private void report(int line, String where, String message) {

@@ -38,4 +38,9 @@ public class ReversePolishNotationVisitor implements ExpressionVisitor<String> {
     unaryExpression.append(expr.getOperator().lexeme());
     return unaryExpression.toString();
   }
+
+  @Override
+  public String visitConditionalExpr(ConditionalExpression expr) {
+    return "";
+  }
 }
