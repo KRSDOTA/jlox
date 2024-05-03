@@ -12,148 +12,169 @@ import static org.lox.scanning.TokenType.*;
 
 public class Parser {
 
-  private static class ParseError extends RuntimeException {
-  }
-
-  private final static TokenType[] EQUALITY_OPERATORS = new TokenType[]{BANG_EQUAL, EQUAL_EQUAL};
-  private final static TokenType[] INEQUALITY_OPERATORS = new TokenType[]{GREATER, GREATER_EQUAL, LESS, LESS_EQUAL};
-
-  private final JLoxErrorHandler jLoxErrorHandler = new JLoxParserErrorHandler();
-
-  private final List<Token> tokens;
-  private int current = 0;
-
-  public Parser(List<Token> tokens) {
-    this.tokens = tokens;
-  }
-
-  /**
-   * Parse the tokens assigned to the class
-   * @return full parsed AST
-   */
-  public Expression parse() {
-    try {
-      return expression();
-    } catch (ParseError error) {
-      return null;
-    }
-  }
-
-  public boolean hadError() {
-    return jLoxErrorHandler.hadError();
-  }
-
-  private Expression expression() {
-   Expression leftBlockExpression = conditional();
-
-   while(matchUnconsumedToken(COMMA)) {
-      final Token operator = consumeToken();
-      final Expression rightBlockExpression = conditional();
-      leftBlockExpression = new BinaryExpression(leftBlockExpression, operator,  rightBlockExpression);
-    }
-   
-    return leftBlockExpression;
-  }
-
-  private Expression conditional(){
-    Expression conditionalExpression = equality();
-    if(matchUnconsumedToken(QUESTION)){
-       consumeToken();
-       Expression thenBranch = expression();
-       consumeIfTokenMatchOtherwiseError(TokenType.COLON, "Expected ':' after then branch of conditional expression");
-       Expression elseBranch = conditional();
-       conditionalExpression = new ConditionalExpression(conditionalExpression, thenBranch, elseBranch);
+    private static class ParseError extends RuntimeException {
     }
 
-    return conditionalExpression;
-  }
+    private final static TokenType[] EQUALITY_OPERATORS = new TokenType[]{BANG_EQUAL, EQUAL_EQUAL};
+    private final static TokenType[] INEQUALITY_OPERATORS = new TokenType[]{GREATER, GREATER_EQUAL, LESS, LESS_EQUAL};
 
-  private Expression equality() {
-    Expression leftAssociativeTree = comparison();
+    private final JLoxErrorHandler jLoxErrorHandler = new JLoxParserErrorHandler();
 
-    while (matchUnconsumedToken(EQUALITY_OPERATORS)) {
-      final Token operator = consumeToken();
-      final Expression rightTree = comparison();
-      leftAssociativeTree = new BinaryExpression(leftAssociativeTree, operator, rightTree);
+    private final List<Token> tokens;
+    private int current = 0;
+
+    public Parser(List<Token> tokens) {
+        this.tokens = tokens;
     }
 
-    return leftAssociativeTree;
-  }
-
-  private Expression comparison() {
-    Expression expression = term();
-
-    while (matchUnconsumedToken(INEQUALITY_OPERATORS)) {
-      final Token operator = consumeToken();
-      final Expression right = term();
-      expression = new BinaryExpression(expression, operator, right);
+    /**
+     * Parse the tokens assigned to the class
+     *
+     * @return full parsed AST
+     */
+    public Expression parse() {
+        try {
+            return expression();
+        } catch (ParseError error) {
+            return null;
+        }
     }
 
-    return expression;
-  }
-
-  private Expression term() {
-    Expression expression = factor();
-
-    while (matchUnconsumedToken(MINUS, PLUS)) {
-      final Token operator = consumeToken();
-      final Expression right = factor();
-      expression = new BinaryExpression(expression, operator, right);
+    public boolean hadError() {
+        return jLoxErrorHandler.hadError();
     }
 
-    return expression;
-  }
+    private Expression expression() {
+        Expression leftBlockExpression = conditional();
 
-  private Expression factor() {
-    Expression expression = unary();
+        while (matchUnconsumedToken(COMMA)) {
+            final Token operator = consumeToken();
+            final Expression rightBlockExpression = conditional();
+            leftBlockExpression = new BinaryExpression(leftBlockExpression, operator, rightBlockExpression);
+        }
 
-    while (matchUnconsumedToken(SLASH, STAR)) {
-      final Token operator = consumeToken();
-      final Expression right = unary();
-      expression = new BinaryExpression(expression, operator, right);
+        return leftBlockExpression;
     }
 
-    return expression;
-  }
+    private Expression conditional() {
+        Expression conditionalExpression = equality();
+        if (matchUnconsumedToken(QUESTION)) {
+            consumeToken();
+            Expression thenBranch = expression();
+            consumeIfTokenMatchOtherwiseError(TokenType.COLON, "Expected ':' after then branch of conditional expression");
+            Expression elseBranch = conditional();
+            conditionalExpression = new ConditionalExpression(conditionalExpression, thenBranch, elseBranch);
+        }
 
-  private Expression unary() {
-    if (matchUnconsumedToken(BANG, MINUS)) {
-      final Token operator = consumeToken();
-      final Expression right = unary();
-      return new UnaryExpression(operator, right);
+        return conditionalExpression;
     }
 
-    return primary();
-  }
+    private Expression equality() {
+        Expression leftAssociativeTree = comparison();
 
-  private Expression primary() {
-    if (matchUnconsumedToken(FALSE)) {
-      consumeToken();
-      return new LiteralExpression(false);
+        while (matchUnconsumedToken(EQUALITY_OPERATORS)) {
+            final Token operator = consumeToken();
+            final Expression rightTree = comparison();
+            leftAssociativeTree = new BinaryExpression(leftAssociativeTree, operator, rightTree);
+        }
+
+        return leftAssociativeTree;
     }
 
-    if (matchUnconsumedToken(TRUE)) {
-      consumeToken();
-      return new LiteralExpression(true);
+    private Expression comparison() {
+        Expression expression = term();
+
+        while (matchUnconsumedToken(INEQUALITY_OPERATORS)) {
+            final Token operator = consumeToken();
+            final Expression right = term();
+            expression = new BinaryExpression(expression, operator, right);
+        }
+
+        return expression;
     }
 
-    if (matchUnconsumedToken(NIL)) {
-      consumeToken();
-      return new LiteralExpression(null);
+    private Expression term() {
+        Expression expression = factor();
+
+        while (matchUnconsumedToken(MINUS, PLUS)) {
+            final Token operator = consumeToken();
+            final Expression right = factor();
+            expression = new BinaryExpression(expression, operator, right);
+        }
+
+        return expression;
     }
 
-    if (matchUnconsumedToken(NUMBER, STRING)) {
-      return new LiteralExpression(consumeToken().literal());
+    private Expression factor() {
+        Expression expression = unary();
+
+        while (matchUnconsumedToken(SLASH, STAR)) {
+            final Token operator = consumeToken();
+            final Expression right = unary();
+            expression = new BinaryExpression(expression, operator, right);
+        }
+
+        return expression;
     }
 
-    if (matchUnconsumedToken(LEFT_PAREN)) {
-      Expression expression = expression();
-      consumeIfTokenMatchOtherwiseError(RIGHT_PAREN, "Expect ')' after expression.");
-      return new GroupingExpression(expression);
+    private Expression unary() {
+        if (matchUnconsumedToken(BANG, MINUS, PLUS)) {
+            final Token operator = consumeToken();
+            final Expression right = unary();
+            return new UnaryExpression(operator, right);
+        }
+
+        return primary();
     }
 
-    throw error(tokens.get(current), "Expected an expression");
-  }
+    private Expression primary() {
+        if (matchUnconsumedToken(FALSE)) {
+            consumeToken();
+            return new LiteralExpression(false);
+        }
+
+        if (matchUnconsumedToken(TRUE)) {
+            consumeToken();
+            return new LiteralExpression(true);
+        }
+
+        if (matchUnconsumedToken(NIL)) {
+            consumeToken();
+            return new LiteralExpression(null);
+        }
+
+        if (matchUnconsumedToken(NUMBER, STRING)) {
+            return new LiteralExpression(consumeToken().literal());
+        }
+
+        if (matchUnconsumedToken(LEFT_PAREN)) {
+            consumeToken();
+            Expression expression = expression();
+            consumeIfTokenMatchOtherwiseError(RIGHT_PAREN, "Expect ')' after expression.");
+            return new GroupingExpression(expression);
+        }
+
+        if (matchUnconsumedToken(PLUS)) {
+            consumeToken();
+            error(mostRecentlyConsumedToken(), "Missing left hand operand for binary expression");
+            term();
+        }
+
+        if (matchUnconsumedToken(BANG, BANG_EQUAL)) {
+            consumeToken();
+            error(mostRecentlyConsumedToken(), "Missing left-hand operand");
+            return null;
+        }
+
+        if (matchUnconsumedToken(GREATER, GREATER_EQUAL, LESS, LESS_EQUAL)) {
+            consumeToken();
+            error(mostRecentlyConsumedToken(), "Expected an expression");
+            comparison();
+            return null;
+       }
+
+        throw error(tokens.get(current), "Expected an Expression");
+    }
 
   private void synchronise() {
     consumeToken();
