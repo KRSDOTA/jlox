@@ -7,6 +7,7 @@ import org.lox.parser.Parser;
 import org.lox.scanning.Scanner;
 import org.lox.scanning.Token;
 import org.lox.vistor.AstPrinter;
+import org.lox.vistor.Interpreter;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -20,8 +21,9 @@ public class Runner implements JLoxRunner {
 
   private final InputStreamReader input = new InputStreamReader(System.in);
   private final BufferedReader reader = new BufferedReader(input);
-
   private final JLoxErrorHandler jLoxErrorHandler = new JLoxLexerErrorHandler();
+
+  private Interpreter interpreter = new Interpreter();
 
   public void runInterpreterPrompt() throws IOException {
     for (; ; ) {
@@ -42,14 +44,18 @@ public class Runner implements JLoxRunner {
     final Scanner scanner = new Scanner(source, jLoxErrorHandler);
     final List<Token> tokens = scanner.scanTokens();
     final Parser parser = new Parser(tokens);
-    final Expression expression = parser.parse();
 
     if (parser.hadError()) {
-      return;
+      System.exit(65);
     }
 
-    System.out.println(new AstPrinter().printTree(expression));
+    final Expression expression = parser.parse();
 
+    interpreter.interpret(expression);
+
+    if(interpreter.hasError()) {
+      System.exit(70);
+    }
   }
 
 }
