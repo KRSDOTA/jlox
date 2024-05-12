@@ -96,13 +96,13 @@ public class Interpreter implements ExpressionVisitor<Object> {
                 return (double) evaluatedLeftExpression > (double) evaluatedRightExpression; }
             case GREATER_EQUAL -> {
                 if(isOperandsStringAndDouble(evaluatedLeftExpression, evaluatedRightExpression)){
-                    return stringAndDoubleComparison.greaterThan((String) evaluatedLeftExpression, (Double) evaluatedRightExpression);
+                    return stringAndDoubleComparison.greaterOrEqual((String) evaluatedLeftExpression, (Double) evaluatedRightExpression);
                 }
                 if(isOperandsDoubleAndString(evaluatedLeftExpression, evaluatedRightExpression)){
-                    return doubleAndStringComparison.greaterThan((Double) evaluatedLeftExpression, (String) evaluatedRightExpression);
+                    return doubleAndStringComparison.greaterOrEqual((Double) evaluatedLeftExpression, (String) evaluatedRightExpression);
                 }
                 if(isOperandsStringAndString(evaluatedLeftExpression, evaluatedRightExpression)){
-                    return stringAndStringComparison.greaterThan((String) evaluatedLeftExpression, (String) evaluatedRightExpression);
+                    return stringAndStringComparison.greaterOrEqual((String) evaluatedLeftExpression, (String) evaluatedRightExpression);
                 }
                 checkNumberOperands(expr.getOperator(), evaluatedLeftExpression, evaluatedRightExpression);
                 return (double) evaluatedLeftExpression >= (double) evaluatedRightExpression;
@@ -122,13 +122,13 @@ public class Interpreter implements ExpressionVisitor<Object> {
             }
             case LESS_EQUAL -> {
                 if(isOperandsStringAndDouble(evaluatedLeftExpression, evaluatedRightExpression)){
-                    return stringAndDoubleComparison.lessThan((String) evaluatedLeftExpression, (Double) evaluatedRightExpression);
+                    return stringAndDoubleComparison.lessOrEqual((String) evaluatedLeftExpression, (Double) evaluatedRightExpression);
                 }
                 if(isOperandsDoubleAndString(evaluatedLeftExpression, evaluatedRightExpression)){
-                    return doubleAndStringComparison.lessThan((Double) evaluatedLeftExpression, (String) evaluatedRightExpression);
+                    return doubleAndStringComparison.lessOrEqual((Double) evaluatedLeftExpression, (String) evaluatedRightExpression);
                 }
                 if(isOperandsStringAndString(evaluatedLeftExpression, evaluatedRightExpression)){
-                   return stringAndStringComparison.lessThan((String) evaluatedLeftExpression, (String) evaluatedRightExpression);
+                   return stringAndStringComparison.lessOrEqual((String) evaluatedLeftExpression, (String) evaluatedRightExpression);
                 }
                 checkNumberOperands(expr.getOperator(), evaluatedLeftExpression, evaluatedRightExpression);
                 return (double) evaluatedLeftExpression <= (double) evaluatedRightExpression;

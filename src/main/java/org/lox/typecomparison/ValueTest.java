@@ -5,7 +5,6 @@ import org.lox.vistor.RuntimeError;
 
 public class ValueTest {
 
-
     public static boolean isOperandsDoubleAndString(Object evaluatedLeftExpression, Object evaluatedRightExpression) {
         return evaluatedLeftExpression instanceof Double && evaluatedRightExpression instanceof String;
     }

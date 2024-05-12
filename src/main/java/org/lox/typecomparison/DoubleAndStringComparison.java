@@ -8,7 +8,7 @@ public class DoubleAndStringComparison implements Compare<Double, String> {
       return doubleValue > STRING_TO_DOUBLE_CONVERSION_MAP.get(string.substring(0, 1));
     }
 
-    public boolean greaterThan(Double doubleValue, String string) {
+    public boolean greaterOrEqual(Double doubleValue, String string) {
       return doubleValue >= STRING_TO_DOUBLE_CONVERSION_MAP.get(string.substring(0, 1));
     }
 
@@ -16,7 +16,7 @@ public class DoubleAndStringComparison implements Compare<Double, String> {
       return doubleValue < STRING_TO_DOUBLE_CONVERSION_MAP.get(string.substring(0, 1));
     }
 
-    public boolean lessThan(Double doubleValue, String string) {
+    public boolean lessOrEqual(Double doubleValue, String string) {
        return  doubleValue <= STRING_TO_DOUBLE_CONVERSION_MAP.get(string.substring(0, 1));
     }
 }
