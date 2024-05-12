@@ -34,5 +34,6 @@ public class StringDoubleMappings {
         stringDoubleHashMap.put("x", 24d);
         stringDoubleHashMap.put("y", 25d);
         stringDoubleHashMap.put("z", 26d);
+        stringDoubleHashMap.put("", 27d);
     }
 }
