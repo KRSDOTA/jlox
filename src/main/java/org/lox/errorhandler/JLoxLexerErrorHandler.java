@@ -20,7 +20,7 @@ public class JLoxLexerErrorHandler implements JLoxErrorHandler {
 
   @Override
   public void reportError(Token token, String message) {
-
+    report(token.line(), " at " + token.lexeme() + " ", message);
   }
 
   private void report(int line, String where, String message) {

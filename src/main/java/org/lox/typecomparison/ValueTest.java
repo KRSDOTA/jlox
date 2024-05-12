@@ -14,6 +14,9 @@ public class ValueTest {
         return evaluatedLeftExpression instanceof String && evaluatedRightExpression instanceof Double;
     }
 
+    public static boolean isOperandsStringAndString(Object evaluatedLeftExpression, Object evaluatedRightExpression) {
+        return evaluatedLeftExpression instanceof String && evaluatedRightExpression instanceof String;
+    }
     public static void checkNumberOperand(Token operator, Object operand) {
         if(!(operand instanceof Double)){
             throw new RuntimeError(operator, "Operand must be a number");

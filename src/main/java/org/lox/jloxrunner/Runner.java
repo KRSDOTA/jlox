@@ -53,9 +53,9 @@ public class Runner implements JLoxRunner {
 
     interpreter.interpret(expression);
 
-    if(interpreter.hasError()) {
-      System.exit(70);
-    }
+//    if(interpreter.hasError()) {
+//      System.exit(70);
+//    }
   }
 
 }
