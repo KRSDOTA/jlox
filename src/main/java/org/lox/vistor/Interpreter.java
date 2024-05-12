@@ -88,15 +88,34 @@ public class Interpreter implements ExpressionVisitor<Object> {
                 }
 
                 checkNumberOperands(expr.getOperator(), evaluatedLeftExpression, evaluatedRightExpression);
-
                 return (double) evaluatedLeftExpression > (double) evaluatedRightExpression; }
             case GREATER_EQUAL -> {
+
+                if(isOperandsStringAndDouble(evaluatedLeftExpression, evaluatedRightExpression)){
+                    return stringAndDoubleComparison.greaterThan((String) evaluatedLeftExpression, (Double) evaluatedRightExpression);
+                }
+                if(isOperandsDoubleAndString(evaluatedLeftExpression, evaluatedRightExpression)){
+                    return doubleAndStringComparison.greaterThan((Double) evaluatedLeftExpression, (String) evaluatedRightExpression);
+                }
                 checkNumberOperands(expr.getOperator(), evaluatedLeftExpression, evaluatedRightExpression);
                 return (double) evaluatedLeftExpression >= (double) evaluatedRightExpression; }
             case LESS -> {
+
+                if(isOperandsStringAndDouble(evaluatedLeftExpression, evaluatedRightExpression)){
+                    return stringAndDoubleComparison.less((String) evaluatedLeftExpression, (Double) evaluatedRightExpression);
+                }
+                if(isOperandsDoubleAndString(evaluatedLeftExpression, evaluatedRightExpression)){
+                    return doubleAndStringComparison.less((Double) evaluatedLeftExpression, (String) evaluatedRightExpression);
+                }
                 checkNumberOperands(expr.getOperator(), evaluatedLeftExpression, evaluatedRightExpression);
                 return (double) evaluatedLeftExpression < (double) evaluatedRightExpression; }
             case LESS_EQUAL -> {
+                if(isOperandsStringAndDouble(evaluatedLeftExpression, evaluatedRightExpression)){
+                    return stringAndDoubleComparison.lessThan((String) evaluatedLeftExpression, (Double) evaluatedRightExpression);
+                }
+                if(isOperandsDoubleAndString(evaluatedLeftExpression, evaluatedRightExpression)){
+                    return doubleAndStringComparison.lessThan((Double) evaluatedLeftExpression, (String) evaluatedRightExpression);
+                }
                 checkNumberOperands(expr.getOperator(), evaluatedLeftExpression, evaluatedRightExpression);
                 return (double) evaluatedLeftExpression <= (double) evaluatedRightExpression; }
             case BANG_EQUAL -> {return !isEqual(evaluatedLeftExpression, evaluatedRightExpression); }
@@ -105,7 +124,6 @@ public class Interpreter implements ExpressionVisitor<Object> {
             default -> throw new Error("Opps");
         }
     }
-
 
     @Override
     public Object visitGroupingExpr(GroupingExpression expr) {
