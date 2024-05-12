@@ -41,46 +41,46 @@ public class Interpreter implements ExpressionVisitor<Object> {
 
     @Override
     public Object visitBinaryExpr(BinaryExpression expr) {
-        Object leftExpression = evaluate(expr.getLeftHandExpression());
-        Object rightExpression = evaluate(expr.getRightHandExpression());
+        Object evaluatedLeftExpression = evaluate(expr.getLeftHandExpression());
+        Object evaluatedRightExpression = evaluate(expr.getRightHandExpression());
 
         switch (expr.getOperator().tokenType()){
             case MINUS -> {
-                checkNumberOperand(expr.getOperator(), rightExpression);
-                return (double) leftExpression - (double) rightExpression; }
+                checkNumberOperand(expr.getOperator(), evaluatedRightExpression);
+                return (double) evaluatedLeftExpression - (double) evaluatedRightExpression; }
             case SLASH -> {
-                checkNumberOperands(expr.getOperator(), leftExpression, rightExpression);
-                return (double) leftExpression /  (double) rightExpression; }
+                checkNumberOperands(expr.getOperator(), evaluatedLeftExpression, evaluatedRightExpression);
+                return (double) evaluatedLeftExpression /  (double) evaluatedRightExpression; }
             case STAR -> {
-                checkNumberOperand(expr.getOperator(), rightExpression);
-                return (double) leftExpression *  (double) rightExpression; }
+                checkNumberOperand(expr.getOperator(), evaluatedRightExpression);
+                return (double) evaluatedLeftExpression *  (double) evaluatedRightExpression; }
             case PLUS -> {
-                if(leftExpression instanceof Double && rightExpression instanceof  Double) {
-                    return (double) leftExpression + (double) rightExpression;
+                if(evaluatedLeftExpression instanceof Double && evaluatedRightExpression instanceof  Double) {
+                    return (double) evaluatedLeftExpression + (double) evaluatedRightExpression;
                 }
-                if (leftExpression instanceof String && rightExpression instanceof String){
+                if (evaluatedLeftExpression instanceof String && evaluatedRightExpression instanceof String){
                     StringBuilder builder = new StringBuilder();
-                    builder.append((String) leftExpression);
-                    builder.append((String) rightExpression);
+                    builder.append((String) evaluatedLeftExpression);
+                    builder.append((String) evaluatedRightExpression);
                     return builder.toString();
                 }
                 throw new RuntimeError(expr.getOperator(), "Operands must be two strings");
             }
             case GREATER -> {
-                checkNumberOperands(expr.getOperator(), leftExpression, rightExpression);
-                return (double) leftExpression > (double) rightExpression; }
+                checkNumberOperands(expr.getOperator(), evaluatedLeftExpression, evaluatedRightExpression);
+                return (double) evaluatedLeftExpression > (double) evaluatedRightExpression; }
             case GREATER_EQUAL -> {
-                checkNumberOperands(expr.getOperator(), leftExpression, rightExpression);
-                return (double) leftExpression >= (double) rightExpression; }
+                checkNumberOperands(expr.getOperator(), evaluatedLeftExpression, evaluatedRightExpression);
+                return (double) evaluatedLeftExpression >= (double) evaluatedRightExpression; }
             case LESS -> {
-                checkNumberOperands(expr.getOperator(), leftExpression, rightExpression);
-                return (double) leftExpression < (double) rightExpression; }
+                checkNumberOperands(expr.getOperator(), evaluatedLeftExpression, evaluatedRightExpression);
+                return (double) evaluatedLeftExpression < (double) evaluatedRightExpression; }
             case LESS_EQUAL -> {
-                checkNumberOperands(expr.getOperator(), leftExpression, rightExpression);
-                return (double) leftExpression <= (double) rightExpression; }
-            case BANG_EQUAL -> {return !isEqual(leftExpression, rightExpression); }
-            case EQUAL_EQUAL -> {return isEqual(leftExpression, rightExpression); }
-            case COMMA -> { return rightExpression; } // discard left expression without evaluating?
+                checkNumberOperands(expr.getOperator(), evaluatedLeftExpression, evaluatedRightExpression);
+                return (double) evaluatedLeftExpression <= (double) evaluatedRightExpression; }
+            case BANG_EQUAL -> {return !isEqual(evaluatedLeftExpression, evaluatedRightExpression); }
+            case EQUAL_EQUAL -> {return isEqual(evaluatedLeftExpression, evaluatedRightExpression); }
+            case COMMA -> { return evaluatedRightExpression; } // discard left expression without evaluating?
             default -> throw new Error("Opps");
         }
     }
