@@ -1,12 +1,24 @@
 package org.lox.vistor;
 
-import org.lox.abstractsyntaxtree.*;
+import org.lox.abstractsyntaxtree.BinaryExpression;
+import org.lox.abstractsyntaxtree.ConditionalExpression;
+import org.lox.abstractsyntaxtree.Expression;
+import org.lox.abstractsyntaxtree.GroupingExpression;
+import org.lox.abstractsyntaxtree.LiteralExpression;
+import org.lox.abstractsyntaxtree.UnaryExpression;
 import org.lox.errorhandler.JLoxErrorHandler;
 import org.lox.errorhandler.JLoxLexerErrorHandler;
-import org.lox.scanning.Token;
+import org.lox.typecomparison.DoubleAndStringComparison;
+import org.lox.typecomparison.StringAndDoubleComparison;
+
+import static org.lox.typecomparison.ValueTest.*;
 
 public class Interpreter implements ExpressionVisitor<Object> {
     private final JLoxErrorHandler errorHandler = new JLoxLexerErrorHandler();
+
+    private final DoubleAndStringComparison doubleAndStringComparison = new DoubleAndStringComparison();
+
+    private final StringAndDoubleComparison stringAndDoubleComparison = new StringAndDoubleComparison();
 
     public void interpret(Expression expression){
         try {
@@ -64,10 +76,19 @@ public class Interpreter implements ExpressionVisitor<Object> {
                     builder.append((String) evaluatedRightExpression);
                     return builder.toString();
                 }
+
                 throw new RuntimeError(expr.getOperator(), "Operands must be two strings");
             }
             case GREATER -> {
+                if(isOperandsStringAndDouble(evaluatedLeftExpression, evaluatedRightExpression)){
+                    return stringAndDoubleComparison.greater((String) evaluatedLeftExpression, (Double) evaluatedRightExpression);
+                }
+                if(isOperandsDoubleAndString(evaluatedLeftExpression, evaluatedRightExpression)){
+                    return doubleAndStringComparison.greater((Double) evaluatedLeftExpression, (String) evaluatedRightExpression);
+                }
+
                 checkNumberOperands(expr.getOperator(), evaluatedLeftExpression, evaluatedRightExpression);
+
                 return (double) evaluatedLeftExpression > (double) evaluatedRightExpression; }
             case GREATER_EQUAL -> {
                 checkNumberOperands(expr.getOperator(), evaluatedLeftExpression, evaluatedRightExpression);
@@ -85,27 +106,6 @@ public class Interpreter implements ExpressionVisitor<Object> {
         }
     }
 
-    private void checkNumberOperand(Token operator, Object operand) {
-        if(!(operand instanceof Double)){
-            throw new RuntimeError(operator, "Operand must be a number");
-        }
-    }
-
-    private void checkNumberOperands(Token operator, Object... operands) {
-        for(int i = 0; i < operands.length; i++){
-            checkNumberOperand(operator, operands[i]);
-        }
-    }
-
-    private boolean isEqual(Object leftExpression, Object rightExpression) {
-       if(leftExpression == null && rightExpression == null) {
-           return true;
-       }
-       if(leftExpression == null){
-           return false;
-       }
-       return leftExpression.equals(rightExpression);
-    }
 
     @Override
     public Object visitGroupingExpr(GroupingExpression expr) {
@@ -127,15 +127,6 @@ public class Interpreter implements ExpressionVisitor<Object> {
        }
 
        return null;
-    }
-
-    private boolean isTruthy(Object value) {
-     if(value == null) {
-         return false;
-     } if(value instanceof Boolean){
-          return (Boolean) value;
-     }
-     return true;
     }
 
     @Override
