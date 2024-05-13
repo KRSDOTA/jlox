@@ -3,7 +3,9 @@ package org.lox.typecomparison;
 import org.lox.scanning.Token;
 import org.lox.vistor.RuntimeError;
 
-public class ValueTest {
+import java.util.Optional;
+
+public class ValueOperations {
 
     public static boolean isOperandsDoubleAndString(Object evaluatedLeftExpression, Object evaluatedRightExpression) {
         return evaluatedLeftExpression instanceof Double && evaluatedRightExpression instanceof String;
@@ -19,6 +21,14 @@ public class ValueTest {
     public static void checkNumberOperand(Token operator, Object operand) {
         if(!(operand instanceof Double)){
             throw new RuntimeError(operator, "Operand must be a number");
+        }
+    }
+
+    public static Optional<Double> tryParseDouble(String string) {
+        try {
+            return Optional.of(Double.parseDouble(string));
+        } catch (Exception e) {
+            return Optional.empty();
         }
     }
 

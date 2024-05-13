@@ -1,6 +1,7 @@
 package org.lox.typecomparison;
 
 import static org.lox.typecomparison.StringDoubleMappings.STRING_TO_DOUBLE_CONVERSION_MAP;
+import static org.lox.typecomparison.ValueOperations.tryParseDouble;
 
 public class StringAndStringComparison implements Compare<String, String> {
 

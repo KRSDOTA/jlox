@@ -12,7 +12,7 @@ import org.lox.typecomparison.DoubleAndStringComparison;
 import org.lox.typecomparison.StringAndDoubleComparison;
 import org.lox.typecomparison.StringAndStringComparison;
 
-import static org.lox.typecomparison.ValueTest.*;
+import static org.lox.typecomparison.ValueOperations.*;
 
 public class Interpreter implements ExpressionVisitor<Object> {
 
