@@ -15,13 +15,10 @@ import org.lox.typecomparison.StringAndStringComparison;
 import static org.lox.typecomparison.ValueOperations.*;
 
 public class Interpreter implements ExpressionVisitor<Object> {
-
     private final JLoxErrorHandler errorHandler = new JLoxLexerErrorHandler();
     private final DoubleAndStringComparison doubleAndStringComparison = new DoubleAndStringComparison();
     private final StringAndDoubleComparison stringAndDoubleComparison = new StringAndDoubleComparison();
     private final StringAndStringComparison stringAndStringComparison = new StringAndStringComparison();
-
-
 
     public void interpret(Expression expression){
         try {

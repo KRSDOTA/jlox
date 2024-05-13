@@ -19,13 +19,13 @@ public class StringAndDoubleComparison implements Compare<String, Double> {
 
     public boolean less(String string, Double doubleValue) {
         return tryParseDouble(string)
-                .map(aDouble -> aDouble >= doubleValue)
+                .map(aDouble -> aDouble < doubleValue)
                 .orElseGet(() -> STRING_TO_DOUBLE_CONVERSION_MAP.get(string.substring(0, 1)) < doubleValue);
     }
 
    public boolean lessOrEqual(String string, Double doubleValue) {
        return tryParseDouble(string)
-               .map(aDouble -> aDouble >= doubleValue)
+               .map(aDouble -> aDouble <= doubleValue)
                .orElseGet(() -> STRING_TO_DOUBLE_CONVERSION_MAP.get(string.substring(0, 1)) <= doubleValue);
     }
 
