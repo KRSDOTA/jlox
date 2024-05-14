@@ -67,16 +67,18 @@ public class Interpreter implements ExpressionVisitor<Object> {
                 checkNumberOperand(expr.getOperator(), evaluatedRightExpression);
                 return (double) evaluatedLeftExpression *  (double) evaluatedRightExpression; }
             case PLUS -> {
+                if(isOperandsStringAndString(evaluatedLeftExpression, evaluatedRightExpression)){
+                    return (String) evaluatedLeftExpression + (String) evaluatedRightExpression;
+                }
+                if(isOperandsDoubleAndString(evaluatedLeftExpression, evaluatedRightExpression)){
+                    return ((Double) evaluatedLeftExpression).toString() + (String) evaluatedRightExpression;
+                }
+                if(isOperandsStringAndDouble(evaluatedLeftExpression, evaluatedRightExpression)){
+                    return (String) evaluatedLeftExpression + ((Double) evaluatedRightExpression).toString();
+                }
                 if(evaluatedLeftExpression instanceof Double && evaluatedRightExpression instanceof  Double) {
                     return (double) evaluatedLeftExpression + (double) evaluatedRightExpression;
                 }
-                if (evaluatedLeftExpression instanceof String && evaluatedRightExpression instanceof String){
-                    StringBuilder builder = new StringBuilder();
-                    builder.append((String) evaluatedLeftExpression);
-                    builder.append((String) evaluatedRightExpression);
-                    return builder.toString();
-                }
-
                 throw new RuntimeError(expr.getOperator(), "Operands must be two strings");
             }
             case GREATER -> {
