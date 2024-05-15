@@ -1,13 +1,16 @@
-expression      -> comma;
-comma           -> conditional ("," conditional)* ;
-condtional      -> equality ("?" expression : conditional)? ;
-equality        -> comparison ( term ( "==" | "!=" ) comparison )* ;
-comparison      -> term ( ( ">" | ">=" | "<" | "<=" ) term )* ;
-term            -> factor (factor ("-" | "+" ) factor)* ;
-factor          -> unary ( ( "/" | "*" ) unary )* ;
-unary           -> ( "!" | "-" ) unary
-                -> | primary ;
-primary         -> NUMBER | STRING | "true" | "false" | "nil"
-               | "(" expression ")" ;
+program                 -> statement* EOF ;
+statement               -> exprStatement | printStatement
+expressionStatement     -> expression ";" ;
+printStatement          -> "print" expression ";" ;
+expression              -> comma;
+comma                   -> conditional ("," conditional)* ;
+condtional              -> equality ("?" expression : conditional)? ;
+equality                -> comparison ( term ( "==" | "!=" ) comparison )* ;
+comparison              -> term ( ( ">" | ">=" | "<" | "<=" ) term )* ;
+term                    -> factor (factor ("-" | "+" ) factor)* ;
+factor                  -> unary ( ( "/" | "*" ) unary )* ;
+unary                   -> ( "!" | "-" ) unary
+                        -> | primary ;
+primary                 -> NUMBER | STRING | "true" | "false" | "nil" | "(" expression ")" ;
 
 
