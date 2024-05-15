@@ -3,8 +3,10 @@ package org.lox.vistor;
 import org.lox.abstractsyntaxtree.BinaryExpression;
 import org.lox.abstractsyntaxtree.ConditionalExpression;
 import org.lox.abstractsyntaxtree.Expression;
+import org.lox.abstractsyntaxtree.ExpressionStatement;
 import org.lox.abstractsyntaxtree.GroupingExpression;
 import org.lox.abstractsyntaxtree.LiteralExpression;
+import org.lox.abstractsyntaxtree.PrintStatement;
 import org.lox.abstractsyntaxtree.UnaryExpression;
 import org.lox.errorhandler.JLoxErrorHandler;
 import org.lox.errorhandler.JLoxLexerErrorHandler;
@@ -14,7 +16,8 @@ import org.lox.typecomparison.StringAndStringComparison;
 
 import static org.lox.typecomparison.ValueOperations.*;
 
-public class Interpreter implements ExpressionVisitor<Object> {
+public class Interpreter implements ExpressionVisitor<Object>, StatementVisitor<Void> {
+
     private final JLoxErrorHandler errorHandler = new JLoxLexerErrorHandler();
     private final DoubleAndStringComparison doubleAndStringComparison = new DoubleAndStringComparison();
     private final StringAndDoubleComparison stringAndDoubleComparison = new StringAndDoubleComparison();
@@ -171,4 +174,13 @@ public class Interpreter implements ExpressionVisitor<Object> {
         return evaluate(expr.getElseBranch());
     }
 
+    @Override
+    public Void visitExpressionStatement(ExpressionStatement expressionStatement) {
+        return null;
+    }
+
+    @Override
+    public Void visitPrintStatement(PrintStatement printStatement) {
+        return null;
+    }
 }

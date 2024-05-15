@@ -6,6 +6,7 @@ import org.lox.errorhandler.JLoxParserErrorHandler;
 import org.lox.scanning.Token;
 import org.lox.scanning.TokenType;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.lox.scanning.TokenType.*;
@@ -27,23 +28,50 @@ public class Parser {
         this.tokens = tokens;
     }
 
+    public boolean hadError() {
+        return jLoxErrorHandler.hadError();
+    }
+
     /**
      * Parse the tokens assigned to the class
      *
      * @return full parsed AST
      */
-    public Expression parse() {
-        try {
-            return expression();
-        } catch (ParseError error) {
-            return null;
+//    public Expression parse() {
+//        try {
+//            return expression();
+//        } catch (ParseError error) {
+//            return null;
+//        }
+//    }
+    public List<Statement> parse() {
+     List<Statement> statements = new ArrayList<>();
+     while (!isAtEndOfTokenStream()){
+         statements.add(statement());
+     }
+     return statements;
+    }
+
+    private Statement statement() {
+      // Test to see if character is an identifier or reserved word like for, while, if ...
+        if(matchUnconsumedToken(PRINT)){
+            consumeToken();
+            return printStatement();
         }
+       return expressionStatement();
     }
 
-    public boolean hadError() {
-        return jLoxErrorHandler.hadError();
+    private Statement printStatement() {
+        Expression value = expression();
+        consumeIfTokenMatchOtherwiseError(SEMICOLON, "Expect ';' after value");
+        return new PrintStatement(value);
     }
 
+    private Statement expressionStatement() {
+        Expression value = expression();
+        consumeIfTokenMatchOtherwiseError(SEMICOLON, "Expect ';' after value");
+        return new ExpressionStatement(value);
+    }
     private Expression expression() {
         Expression leftBlockExpression = conditional();
 

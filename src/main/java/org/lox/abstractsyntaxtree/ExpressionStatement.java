@@ -1,5 +1,7 @@
 package org.lox.abstractsyntaxtree;
 
+import org.lox.vistor.StatementVisitor;
+
 public class ExpressionStatement extends Statement {
     private final Expression statement;
 
@@ -7,4 +9,7 @@ public class ExpressionStatement extends Statement {
         this.statement = statement;
     }
 
+    <T> T accept(StatementVisitor<T> visitor) {
+        return visitor.visitExpressionStatement(this);
+    }
 }
