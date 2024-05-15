@@ -13,4 +13,8 @@ public class PrintStatement extends Statement {
     <T> T accept(StatementVisitor<T> visitor) {
         return visitor.visitPrintStatement(this);
     }
+
+    public Expression getStatement() {
+        return statement;
+    }
 }

@@ -12,4 +12,8 @@ public class ExpressionStatement extends Statement {
     <T> T accept(StatementVisitor<T> visitor) {
         return visitor.visitExpressionStatement(this);
     }
+
+    public Expression getStatement() {
+        return statement;
+    }
 }

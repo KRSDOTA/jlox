@@ -176,11 +176,14 @@ public class Interpreter implements ExpressionVisitor<Object>, StatementVisitor<
 
     @Override
     public Void visitExpressionStatement(ExpressionStatement expressionStatement) {
+        evaluate(expressionStatement.getStatement());
         return null;
     }
 
     @Override
     public Void visitPrintStatement(PrintStatement printStatement) {
+        Object value = evaluate(printStatement.getStatement());
+        System.out.println(stringify(value));
         return null;
     }
 }
