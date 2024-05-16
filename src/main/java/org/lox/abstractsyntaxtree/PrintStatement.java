@@ -10,7 +10,7 @@ public class PrintStatement extends Statement {
     }
 
     @Override
-    <T> T accept(StatementVisitor<T> visitor) {
+    public <T> T accept(StatementVisitor<T> visitor) {
         return visitor.visitPrintStatement(this);
     }
 

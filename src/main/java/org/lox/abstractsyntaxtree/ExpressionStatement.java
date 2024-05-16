@@ -9,7 +9,7 @@ public class ExpressionStatement extends Statement {
         this.statement = statement;
     }
 
-    <T> T accept(StatementVisitor<T> visitor) {
+    public <T> T accept(StatementVisitor<T> visitor) {
         return visitor.visitExpressionStatement(this);
     }
 

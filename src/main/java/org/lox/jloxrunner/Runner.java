@@ -1,6 +1,7 @@
 package org.lox.jloxrunner;
 
 import org.lox.abstractsyntaxtree.Expression;
+import org.lox.abstractsyntaxtree.Statement;
 import org.lox.errorhandler.JLoxErrorHandler;
 import org.lox.errorhandler.JLoxLexerErrorHandler;
 import org.lox.parser.Parser;
@@ -49,13 +50,9 @@ public class Runner implements JLoxRunner {
       System.exit(65);
     }
 
-    final Expression expression = parser.parse();
+    final List<Statement> statements = parser.parse();
 
-    interpreter.interpret(expression);
-
-//    if(interpreter.hasError()) {
-//      System.exit(70);
-//    }
+    interpreter.interpret(statements);
   }
 
 }

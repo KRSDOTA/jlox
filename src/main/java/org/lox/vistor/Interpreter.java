@@ -1,18 +1,13 @@
 package org.lox.vistor;
 
-import org.lox.abstractsyntaxtree.BinaryExpression;
-import org.lox.abstractsyntaxtree.ConditionalExpression;
-import org.lox.abstractsyntaxtree.Expression;
-import org.lox.abstractsyntaxtree.ExpressionStatement;
-import org.lox.abstractsyntaxtree.GroupingExpression;
-import org.lox.abstractsyntaxtree.LiteralExpression;
-import org.lox.abstractsyntaxtree.PrintStatement;
-import org.lox.abstractsyntaxtree.UnaryExpression;
+import org.lox.abstractsyntaxtree.*;
 import org.lox.errorhandler.JLoxErrorHandler;
 import org.lox.errorhandler.JLoxLexerErrorHandler;
 import org.lox.typecomparison.DoubleAndStringComparison;
 import org.lox.typecomparison.StringAndDoubleComparison;
 import org.lox.typecomparison.StringAndStringComparison;
+
+import java.util.List;
 
 import static org.lox.typecomparison.ValueOperations.*;
 
@@ -23,17 +18,16 @@ public class Interpreter implements ExpressionVisitor<Object>, StatementVisitor<
     private final StringAndDoubleComparison stringAndDoubleComparison = new StringAndDoubleComparison();
     private final StringAndStringComparison stringAndStringComparison = new StringAndStringComparison();
 
-    public void interpret(Expression expression){
+    public void interpret(List<Statement> statements) {
         try {
-            final Object evaluatedExpression = evaluate(expression);
-            System.out.println(stringify(evaluatedExpression));
+            statements.forEach(this::execute);
         } catch (RuntimeError error){
             errorHandler.reportError(error.token, error.getMessage());
         }
     }
 
-    public boolean hasError() {
-        return errorHandler.hadError();
+    private void execute(Statement statement) {
+        statement.accept(this);
     }
 
     private String stringify(Object evaluatedExpression) {

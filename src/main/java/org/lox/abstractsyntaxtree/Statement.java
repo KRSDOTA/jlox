@@ -4,6 +4,6 @@ import org.lox.vistor.StatementVisitor;
 
 public abstract class Statement {
 
-    abstract <T> T accept(StatementVisitor<T> visitor);
+    public abstract <T> T accept(StatementVisitor<T> visitor);
 
 }
