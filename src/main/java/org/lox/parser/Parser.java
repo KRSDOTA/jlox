@@ -1,6 +1,9 @@
 package org.lox.parser;
 
-import org.lox.abstractsyntaxtree.*;
+import org.lox.abstractsyntaxtree.expression.*;
+import org.lox.abstractsyntaxtree.statement.PrintStatement;
+import org.lox.abstractsyntaxtree.statement.Statement;
+import org.lox.abstractsyntaxtree.statement.VariableStatement;
 import org.lox.errorhandler.JLoxErrorHandler;
 import org.lox.errorhandler.JLoxParserErrorHandler;
 import org.lox.scanning.Token;
@@ -32,28 +35,41 @@ public class Parser {
         return jLoxErrorHandler.hadError();
     }
 
-    /**
-     * Parse the tokens assigned to the class
-     *
-     * @return full parsed AST
-     */
-//    public Expression parse() {
-//        try {
-//            return expression();
-//        } catch (ParseError error) {
-//            return null;
-//        }
-//    }
     public List<Statement> parse() {
      List<Statement> statements = new ArrayList<>();
      while (!isAtEndOfTokenStream()){
-         statements.add(statement());
+         statements.add(declaration());
      }
      return statements;
     }
 
-    private Statement statement() {
-      // Test to see if character is an identifier or reserved word like for, while, if ...
+  private Statement declaration() {
+    try {
+     if(matchUnconsumedToken(VAR)) {
+       return varDeclaration();
+     }
+     return statement();
+    } catch (ParseError error){
+      synchronise();
+      return null;
+    }
+  }
+
+  private Statement varDeclaration() {
+    Token name = consumeIfTokenMatchOtherwiseError(IDENTIFIER, "Expected a variable name");
+
+    Expression initaliser = null;
+
+    if(matchUnconsumedToken(EQUAL)){
+      consumeToken();
+      initaliser = expression();
+    }
+
+    consumeIfTokenMatchOtherwiseError(SEMICOLON, "Expect ; after variable declaration");
+    return new VariableStatement(initaliser, name);
+  }
+
+  private Statement statement() {
         if(matchUnconsumedToken(PRINT)){
             consumeToken();
             return printStatement();

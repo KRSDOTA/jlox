@@ -1,4 +1,4 @@
-package org.lox.abstractsyntaxtree;
+package org.lox.abstractsyntaxtree.statement;
 
 import org.lox.vistor.StatementVisitor;
 

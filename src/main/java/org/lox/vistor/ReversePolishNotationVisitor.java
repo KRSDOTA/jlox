@@ -1,6 +1,6 @@
 package org.lox.vistor;
 
-import org.lox.abstractsyntaxtree.*;
+import org.lox.abstractsyntaxtree.expression.*;
 
 public class ReversePolishNotationVisitor implements ExpressionVisitor<String> {
 
@@ -42,5 +42,10 @@ public class ReversePolishNotationVisitor implements ExpressionVisitor<String> {
   @Override
   public String visitConditionalExpr(ConditionalExpression expr) {
     return "";
+  }
+
+  @Override
+  public String visitVariableExpr(VariableExpression variableExpression) {
+    return null;
   }
 }

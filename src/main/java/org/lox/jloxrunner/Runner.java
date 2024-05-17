@@ -1,13 +1,11 @@
 package org.lox.jloxrunner;
 
-import org.lox.abstractsyntaxtree.Expression;
-import org.lox.abstractsyntaxtree.Statement;
+import org.lox.abstractsyntaxtree.statement.Statement;
 import org.lox.errorhandler.JLoxErrorHandler;
 import org.lox.errorhandler.JLoxLexerErrorHandler;
 import org.lox.parser.Parser;
 import org.lox.scanning.Scanner;
 import org.lox.scanning.Token;
-import org.lox.vistor.AstPrinter;
 import org.lox.vistor.Interpreter;
 
 import java.io.BufferedReader;

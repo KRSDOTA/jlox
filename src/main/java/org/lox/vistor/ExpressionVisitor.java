@@ -1,12 +1,13 @@
 package org.lox.vistor;
 
-import org.lox.abstractsyntaxtree.*;
+import org.lox.abstractsyntaxtree.expression.*;
 
 public interface ExpressionVisitor<T> {
-  T visitBinaryExpr(BinaryExpression expr);
-  T visitGroupingExpr(GroupingExpression expr);
-  T visitLiteralExpr(LiteralExpression expr);
-  T visitUnaryExpr(UnaryExpression expr);
-  T visitConditionalExpr(ConditionalExpression expr);
+  T visitBinaryExpr(BinaryExpression binaryExpression);
+  T visitGroupingExpr(GroupingExpression groupingExpression);
+  T visitLiteralExpr(LiteralExpression literalExpression);
+  T visitUnaryExpr(UnaryExpression unaryExpression);
+  T visitConditionalExpr(ConditionalExpression conditionalExpression);
+  T visitVariableExpr(VariableExpression variableExpression);
 }
 

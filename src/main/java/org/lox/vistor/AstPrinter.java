@@ -1,6 +1,6 @@
 package org.lox.vistor;
 
-import org.lox.abstractsyntaxtree.*;
+import org.lox.abstractsyntaxtree.expression.*;
 
 public class AstPrinter implements ExpressionVisitor<String> {
 
@@ -32,6 +32,11 @@ public class AstPrinter implements ExpressionVisitor<String> {
   @Override
   public String visitConditionalExpr(ConditionalExpression expr) {
     return parenthesize("group", expr.getExpression(), expr.getThenBranch(), expr.getElseBranch());
+  }
+
+  @Override
+  public String visitVariableExpr(VariableExpression variableExpression) {
+    return null;
   }
 
   private String parenthesize(String name, Expression... exprs) {

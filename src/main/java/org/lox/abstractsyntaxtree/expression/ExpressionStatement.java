@@ -1,5 +1,6 @@
-package org.lox.abstractsyntaxtree;
+package org.lox.abstractsyntaxtree.expression;
 
+import org.lox.abstractsyntaxtree.statement.Statement;
 import org.lox.vistor.StatementVisitor;
 
 public class ExpressionStatement extends Statement {

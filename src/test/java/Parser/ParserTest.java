@@ -1,7 +1,7 @@
 package Parser;
 
 import org.junit.jupiter.api.Test;
-import org.lox.abstractsyntaxtree.Expression;
+import org.lox.abstractsyntaxtree.expression.Expression;
 import org.lox.parser.Parser;
 import org.lox.scanning.Token;
 import org.lox.scanning.TokenType;

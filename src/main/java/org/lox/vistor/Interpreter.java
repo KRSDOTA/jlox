@@ -1,6 +1,9 @@
 package org.lox.vistor;
 
-import org.lox.abstractsyntaxtree.*;
+import org.lox.abstractsyntaxtree.expression.*;
+import org.lox.abstractsyntaxtree.statement.PrintStatement;
+import org.lox.abstractsyntaxtree.statement.Statement;
+import org.lox.abstractsyntaxtree.statement.VariableStatement;
 import org.lox.errorhandler.JLoxErrorHandler;
 import org.lox.errorhandler.JLoxLexerErrorHandler;
 import org.lox.typecomparison.DoubleAndStringComparison;
@@ -169,6 +172,12 @@ public class Interpreter implements ExpressionVisitor<Object>, StatementVisitor<
     }
 
     @Override
+    public Object visitVariableExpr(VariableExpression variableExpression) {
+//        return evaluate(variableExpression.getTokenName()); Need to use the tokenName to access global state
+        return null;
+    }
+
+    @Override
     public Void visitExpressionStatement(ExpressionStatement expressionStatement) {
         evaluate(expressionStatement.getStatement());
         return null;
@@ -178,6 +187,11 @@ public class Interpreter implements ExpressionVisitor<Object>, StatementVisitor<
     public Void visitPrintStatement(PrintStatement printStatement) {
         Object value = evaluate(printStatement.getStatement());
         System.out.println(stringify(value));
+        return null;
+    }
+
+    @Override
+    public Void visitVariableStatement(VariableStatement variableStatement) {
         return null;
     }
 }
