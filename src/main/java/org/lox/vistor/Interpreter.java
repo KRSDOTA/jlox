@@ -12,6 +12,7 @@ import org.lox.typecomparison.StringAndStringComparison;
 
 import java.util.List;
 
+import static org.lox.Environment.DECLARATION_LOOKUP;
 import static org.lox.typecomparison.ValueOperations.*;
 
 public class Interpreter implements ExpressionVisitor<Object>, StatementVisitor<Void> {
@@ -173,8 +174,7 @@ public class Interpreter implements ExpressionVisitor<Object>, StatementVisitor<
 
     @Override
     public Object visitVariableExpr(VariableExpression variableExpression) {
-//        return evaluate(variableExpression.getTokenName()); Need to use the tokenName to access global state
-        return null;
+        return DECLARATION_LOOKUP.get(variableExpression.token.lexeme());
     }
 
     @Override
@@ -192,6 +192,7 @@ public class Interpreter implements ExpressionVisitor<Object>, StatementVisitor<
 
     @Override
     public Void visitVariableStatement(VariableStatement variableStatement) {
+        DECLARATION_LOOKUP.put(variableStatement.getTokenName().lexeme(), evaluate(variableStatement.getExpression()));
         return null;
     }
 }

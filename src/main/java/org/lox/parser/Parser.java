@@ -46,6 +46,7 @@ public class Parser {
   private Statement declaration() {
     try {
      if(matchUnconsumedToken(VAR)) {
+       consumeToken();
        return varDeclaration();
      }
      return statement();
@@ -216,6 +217,10 @@ public class Parser {
             comparison();
             return null;
        }
+
+        if(matchUnconsumedToken(IDENTIFIER)){
+          return new VariableExpression(consumeToken());
+        }
 
         throw error(tokens.get(current), "Expected an Expression");
     }
