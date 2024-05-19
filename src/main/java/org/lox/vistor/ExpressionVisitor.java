@@ -9,5 +9,6 @@ public interface ExpressionVisitor<T> {
   T visitUnaryExpr(UnaryExpression unaryExpression);
   T visitConditionalExpr(ConditionalExpression conditionalExpression);
   T visitVariableExpr(VariableExpression variableExpression);
+  T visitAssignmentExpr(AssignmentExpression assignmentExpression);
 }
 

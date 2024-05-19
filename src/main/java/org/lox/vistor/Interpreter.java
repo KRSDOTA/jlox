@@ -180,6 +180,12 @@ public class Interpreter implements ExpressionVisitor<Object>, StatementVisitor<
     }
 
     @Override
+    public Void visitAssignmentExpr(AssignmentExpression assignmentExpression) {
+      globalEnvironment.define(assignmentExpression.getToken(), evaluate(assignmentExpression.getValue()));
+      return null;
+    }
+
+    @Override
     public Void visitExpressionStatement(ExpressionStatement expressionStatement) {
         evaluate(expressionStatement.getStatement());
         return null;

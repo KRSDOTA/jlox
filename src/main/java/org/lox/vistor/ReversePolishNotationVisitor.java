@@ -48,4 +48,9 @@ public class ReversePolishNotationVisitor implements ExpressionVisitor<String> {
   public String visitVariableExpr(VariableExpression variableExpression) {
     return null;
   }
+
+  @Override
+  public String visitAssignmentExpr(AssignmentExpression assignmentExpression) {
+    return null;
+  }
 }
