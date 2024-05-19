@@ -4,7 +4,7 @@ import org.lox.scanning.Token;
 import org.lox.vistor.ExpressionVisitor;
 
 public class VariableExpression extends Expression {
-  public final Token token;
+  private final Token token;
 
   public VariableExpression(Token token) {
     this.token = token;

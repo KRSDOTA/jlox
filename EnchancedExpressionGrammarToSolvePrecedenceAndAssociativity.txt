@@ -4,7 +4,8 @@ varDecl                 -> "var" IDENTIFIER ("=" expression)? ";" ;
 statement               -> exprStatement | printStatement
 expressionStatement     -> expression ";" ;
 printStatement          -> "print" expression ";" ;
-expression              -> comma;
+expression              -> assignment;
+assignment              -> IDENTIFIER "=" assignment | comma ;
 comma                   -> conditional ("," conditional)* ;
 condtional              -> equality ("?" expression : conditional)? ;
 equality                -> comparison ( term ( "==" | "!=" ) comparison )* ;

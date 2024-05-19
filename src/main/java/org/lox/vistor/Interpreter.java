@@ -1,5 +1,6 @@
 package org.lox.vistor;
 
+import org.lox.Environment;
 import org.lox.abstractsyntaxtree.expression.*;
 import org.lox.abstractsyntaxtree.statement.PrintStatement;
 import org.lox.abstractsyntaxtree.statement.Statement;
@@ -12,7 +13,6 @@ import org.lox.typecomparison.StringAndStringComparison;
 
 import java.util.List;
 
-import static org.lox.Environment.DECLARATION_LOOKUP;
 import static org.lox.typecomparison.ValueOperations.*;
 
 public class Interpreter implements ExpressionVisitor<Object>, StatementVisitor<Void> {
@@ -21,6 +21,8 @@ public class Interpreter implements ExpressionVisitor<Object>, StatementVisitor<
     private final DoubleAndStringComparison doubleAndStringComparison = new DoubleAndStringComparison();
     private final StringAndDoubleComparison stringAndDoubleComparison = new StringAndDoubleComparison();
     private final StringAndStringComparison stringAndStringComparison = new StringAndStringComparison();
+
+    private final Environment globalEnvironment = new Environment();
 
     public void interpret(List<Statement> statements) {
         try {
@@ -174,7 +176,7 @@ public class Interpreter implements ExpressionVisitor<Object>, StatementVisitor<
 
     @Override
     public Object visitVariableExpr(VariableExpression variableExpression) {
-        return DECLARATION_LOOKUP.get(variableExpression.token.lexeme());
+        return globalEnvironment.getValue(variableExpression.getToken());
     }
 
     @Override
@@ -192,7 +194,7 @@ public class Interpreter implements ExpressionVisitor<Object>, StatementVisitor<
 
     @Override
     public Void visitVariableStatement(VariableStatement variableStatement) {
-        DECLARATION_LOOKUP.put(variableStatement.getTokenName().lexeme(), evaluate(variableStatement.getExpression()));
+        globalEnvironment.define(variableStatement.getTokenName(), evaluate(variableStatement.getExpression()));
         return null;
     }
 }
