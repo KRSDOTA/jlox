@@ -90,15 +90,37 @@ public class Parser {
         return new ExpressionStatement(value);
     }
     private Expression expression() {
-        Expression leftBlockExpression = conditional();
+        return comma();
+    }
+
+    private Expression comma() {
+        Expression leftBlockExpression = assignment();
 
         while (matchUnconsumedToken(COMMA)) {
             final Token operator = consumeToken();
-            final Expression rightBlockExpression = conditional();
+            final Expression rightBlockExpression = assignment();
             leftBlockExpression = new BinaryExpression(leftBlockExpression, operator, rightBlockExpression);
         }
 
         return leftBlockExpression;
+    }
+
+    private Expression assignment() {
+        Expression expression = conditional();
+
+        if(matchUnconsumedToken(EQUAL)) {
+            Token equals = consumeToken();
+            Expression value = assignment();
+
+            if(expression instanceof VariableExpression) {
+                Token name = ((VariableExpression) expression).getToken();
+                return new AssignmentExpression(value, name);
+            }
+
+            error(equals, "Invalid assignment target");
+        }
+
+        return expression;
     }
 
     private Expression conditional() {

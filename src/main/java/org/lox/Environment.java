@@ -21,4 +21,11 @@ public class Environment {
     throw new RuntimeError(token, "undefined variable specified");
   }
 
+  public void assign(Token name, Object value) {
+    if(declarationLookup.containsKey(name.lexeme())){
+      declarationLookup.put(name.lexeme(), value);
+      return;
+    }
+   throw new RuntimeError(name, "undefined variable '" + name.lexeme() + "'.");
+  }
 }
