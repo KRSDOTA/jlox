@@ -1,6 +1,8 @@
 package org.lox.parser;
 
 import org.lox.abstractsyntaxtree.expression.*;
+import org.lox.abstractsyntaxtree.statement.BlockStatement;
+import org.lox.abstractsyntaxtree.statement.ExpressionStatement;
 import org.lox.abstractsyntaxtree.statement.PrintStatement;
 import org.lox.abstractsyntaxtree.statement.Statement;
 import org.lox.abstractsyntaxtree.statement.VariableStatement;
@@ -75,8 +77,18 @@ public class Parser {
             consumeToken();
             return printStatement();
         }
+        if(matchUnconsumedToken(LEFT_BRACE)){
+            return new BlockStatement(block());
+        }
        return expressionStatement();
     }
+
+//    private List<Statement> block() {
+//      List<Statement> statements = new ArrayList<>();
+//
+//      while(!check(RIGHT_BRACE)
+//
+//    }
 
     private Statement printStatement() {
         Expression value = expression();

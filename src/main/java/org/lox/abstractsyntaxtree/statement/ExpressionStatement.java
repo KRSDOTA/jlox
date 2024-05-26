@@ -1,5 +1,6 @@
-package org.lox.abstractsyntaxtree.expression;
+package org.lox.abstractsyntaxtree.statement;
 
+import org.lox.abstractsyntaxtree.expression.Expression;
 import org.lox.abstractsyntaxtree.statement.Statement;
 import org.lox.vistor.StatementVisitor;
 

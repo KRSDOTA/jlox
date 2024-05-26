@@ -1,7 +1,8 @@
 program                 -> declaration* EOF ;
 declaration             -> varDecl | statement;
 varDecl                 -> "var" IDENTIFIER ("=" expression)? ";" ;
-statement               -> exprStatement | printStatement
+statement               -> exprStatement | printStatement | block ;
+block                   -> "{" declaration* "}" ;
 expressionStatement     -> expression ";" ;
 printStatement          -> "print" expression ";" ;
 expression              -> assignment;

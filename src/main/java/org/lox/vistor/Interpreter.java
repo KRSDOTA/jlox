@@ -2,6 +2,8 @@ package org.lox.vistor;
 
 import org.lox.Environment;
 import org.lox.abstractsyntaxtree.expression.*;
+import org.lox.abstractsyntaxtree.statement.BlockStatement;
+import org.lox.abstractsyntaxtree.statement.ExpressionStatement;
 import org.lox.abstractsyntaxtree.statement.PrintStatement;
 import org.lox.abstractsyntaxtree.statement.Statement;
 import org.lox.abstractsyntaxtree.statement.VariableStatement;
@@ -202,6 +204,11 @@ public class Interpreter implements ExpressionVisitor<Object>, StatementVisitor<
     @Override
     public Void visitVariableStatement(VariableStatement variableStatement) {
         globalEnvironment.define(variableStatement.getTokenName(), evaluate(variableStatement.getExpression()));
+        return null;
+    }
+
+    @Override
+    public Void visitBlockStatement(BlockStatement blockStatement) {
         return null;
     }
 }
