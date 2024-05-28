@@ -24,7 +24,7 @@ public class Interpreter implements ExpressionVisitor<Object>, StatementVisitor<
     private final StringAndDoubleComparison stringAndDoubleComparison = new StringAndDoubleComparison();
     private final StringAndStringComparison stringAndStringComparison = new StringAndStringComparison();
 
-    private final Environment globalEnvironment = new Environment();
+    private Environment globalEnvironment = new Environment();
 
     public void interpret(List<Statement> statements) {
         try {
@@ -203,12 +203,27 @@ public class Interpreter implements ExpressionVisitor<Object>, StatementVisitor<
 
     @Override
     public Void visitVariableStatement(VariableStatement variableStatement) {
-        globalEnvironment.define(variableStatement.getTokenName(), evaluate(variableStatement.getExpression()));
+        Object value = null;
+        if(variableStatement.getExpression() != null) {
+            value = evaluate(variableStatement.getExpression());
+        }
+        globalEnvironment.define(variableStatement.getTokenName(), value);
         return null;
     }
 
     @Override
     public Void visitBlockStatement(BlockStatement blockStatement) {
-        return null;
+       executeBlock(blockStatement.getStatements(), new Environment(globalEnvironment));
+       return null;
+    }
+
+    private void executeBlock(List<Statement> statements, Environment environment) {
+        Environment previous = globalEnvironment;
+        try {
+            this.globalEnvironment = environment;
+            statements.forEach(this::execute);
+        } finally {
+            this.globalEnvironment = previous;
+        }
     }
 }

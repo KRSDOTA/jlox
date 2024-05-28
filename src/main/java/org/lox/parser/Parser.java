@@ -78,6 +78,7 @@ public class Parser {
             return printStatement();
         }
         if(matchUnconsumedToken(LEFT_BRACE)){
+            consumeToken();
             return new BlockStatement(block());
         }
        return expressionStatement();
@@ -86,7 +87,7 @@ public class Parser {
     private List<Statement> block() {
       List<Statement> statements = new ArrayList<>();
 
-      while (!doesNextTokenMatch(RIGHT_BRACE) && !isAtEndOfTokenStream()){
+      while (!doesNextTokenMatch(RIGHT_BRACE)){
           statements.add(declaration());
       }
 
