@@ -1,16 +1,13 @@
 package org.lox.parser;
 
 import org.lox.abstractsyntaxtree.expression.*;
-import org.lox.abstractsyntaxtree.statement.BlockStatement;
-import org.lox.abstractsyntaxtree.statement.ExpressionStatement;
-import org.lox.abstractsyntaxtree.statement.PrintStatement;
-import org.lox.abstractsyntaxtree.statement.Statement;
-import org.lox.abstractsyntaxtree.statement.VariableStatement;
+import org.lox.abstractsyntaxtree.statement.*;
 import org.lox.errorhandler.JLoxErrorHandler;
 import org.lox.errorhandler.JLoxParserErrorHandler;
 import org.lox.scanning.Token;
 import org.lox.scanning.TokenType;
 
+import javax.swing.plaf.nimbus.State;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -77,11 +74,34 @@ public class Parser {
             consumeToken();
             return printStatement();
         }
+        if(matchUnconsumedToken(IF)){
+            consumeToken();
+            return ifStatement();
+        }
         if(matchUnconsumedToken(LEFT_BRACE)){
             consumeToken();
             return new BlockStatement(block());
         }
        return expressionStatement();
+    }
+
+    private Statement printStatement() {
+        Expression value = expression();
+        consumeIfTokenMatchOtherwiseError(SEMICOLON, "Expect ';' after value ");
+        return new PrintStatement(value);
+    }
+
+    private Statement ifStatement() {
+       consumeIfTokenMatchOtherwiseError(LEFT_PAREN, "Expect '(' after 'if' ");
+       Expression condition = expression();
+       consumeIfTokenMatchOtherwiseError(RIGHT_PAREN, "Expect closing ')' after expression ");
+       Statement thenBranch = statement();
+       Statement elseBranch = null;
+       if(doesNextTokenMatch(ELSE)) {
+           consumeToken();
+           elseBranch = statement();
+       }
+       return new IfStatement(condition, thenBranch, elseBranch);
     }
 
     private List<Statement> block() {
@@ -95,15 +115,9 @@ public class Parser {
       return statements;
     }
 
-    private Statement printStatement() {
-        Expression value = expression();
-        consumeIfTokenMatchOtherwiseError(SEMICOLON, "Expect ';' after value");
-        return new PrintStatement(value);
-    }
-
     private Statement expressionStatement() {
         Expression value = expression();
-        consumeIfTokenMatchOtherwiseError(SEMICOLON, "Expect ';' after value");
+        consumeIfTokenMatchOtherwiseError(SEMICOLON, "Expect ';' after value ");
         return new ExpressionStatement(value);
     }
     private Expression expression() {

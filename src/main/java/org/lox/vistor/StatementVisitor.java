@@ -1,9 +1,6 @@
 package org.lox.vistor;
 
-import org.lox.abstractsyntaxtree.statement.BlockStatement;
-import org.lox.abstractsyntaxtree.statement.ExpressionStatement;
-import org.lox.abstractsyntaxtree.statement.PrintStatement;
-import org.lox.abstractsyntaxtree.statement.VariableStatement;
+import org.lox.abstractsyntaxtree.statement.*;
 
 public interface StatementVisitor<T> {
 
@@ -11,4 +8,5 @@ public interface StatementVisitor<T> {
     T visitPrintStatement(PrintStatement printStatement);
     T visitVariableStatement(VariableStatement variableStatement);
     T visitBlockStatement(BlockStatement blockStatement);
+    T visitIfStatement(IfStatement ifStatement);
 }

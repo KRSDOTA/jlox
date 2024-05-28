@@ -1,12 +1,15 @@
 package org.lox.jloxrunner;
 
+import org.lox.abstractsyntaxtree.expression.AssignmentExpression;
+import org.lox.abstractsyntaxtree.statement.ExpressionStatement;
 import org.lox.abstractsyntaxtree.statement.Statement;
 import org.lox.errorhandler.JLoxErrorHandler;
 import org.lox.errorhandler.JLoxLexerErrorHandler;
 import org.lox.parser.Parser;
 import org.lox.scanning.Scanner;
 import org.lox.scanning.Token;
-import org.lox.vistor.Interpreter;
+import org.lox.vistor.SingleExpressionInterpreter;
+import org.lox.vistor.StatementInterpreter;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -21,10 +24,15 @@ public class Runner implements JLoxRunner {
   private final InputStreamReader input = new InputStreamReader(System.in);
   private final BufferedReader reader = new BufferedReader(input);
   private final JLoxErrorHandler jLoxErrorHandler = new JLoxLexerErrorHandler();
+  private final StatementInterpreter statementInterpreter = new StatementInterpreter();
+  private final SingleExpressionInterpreter singleExpressionInterpreter = new SingleExpressionInterpreter();
+  private final boolean replEnabled;
 
-  private Interpreter interpreter = new Interpreter();
+    public Runner(boolean replEnabled) {
+        this.replEnabled = replEnabled;
+    }
 
-  public void runInterpreterPrompt() throws IOException {
+    public void runInterpreterPrompt() throws IOException {
     for (; ; ) {
       System.out.println("> ");
       final String line = reader.readLine();
@@ -44,13 +52,29 @@ public class Runner implements JLoxRunner {
     final List<Token> tokens = scanner.scanTokens();
     final Parser parser = new Parser(tokens);
 
+    final List<Statement> statements = parser.parse();
+
     if (parser.hadError()) {
       System.exit(65);
     }
 
-    final List<Statement> statements = parser.parse();
-
-    interpreter.interpret(statements);
+    if(containsSingleExpression(statements) && replEnabled) {
+      singleExpressionInterpreter.interpret(((ExpressionStatement) statements.get(0)).getStatement());
+    } else {
+      statementInterpreter.interpret(statements);
+    }
   }
 
+  private boolean containsSingleExpression(List<Statement> statements){
+    if(statements.isEmpty()) {
+      return false;
+    }
+    final Statement statement = statements.get(0);
+
+    if(!(statement instanceof ExpressionStatement)) {
+     return false;
+    }
+
+    return !(((ExpressionStatement) statement).getStatement() instanceof AssignmentExpression);
+  }
 }

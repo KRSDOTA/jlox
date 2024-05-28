@@ -1,60 +1,19 @@
 package org.lox.vistor;
 
-import org.lox.Environment;
 import org.lox.abstractsyntaxtree.expression.*;
-import org.lox.abstractsyntaxtree.statement.BlockStatement;
-import org.lox.abstractsyntaxtree.statement.ExpressionStatement;
-import org.lox.abstractsyntaxtree.statement.PrintStatement;
-import org.lox.abstractsyntaxtree.statement.Statement;
-import org.lox.abstractsyntaxtree.statement.VariableStatement;
-import org.lox.errorhandler.JLoxErrorHandler;
-import org.lox.errorhandler.JLoxLexerErrorHandler;
 import org.lox.typecomparison.DoubleAndStringComparison;
+import org.lox.typecomparison.StringAndDoubleAddition;
 import org.lox.typecomparison.StringAndDoubleComparison;
 import org.lox.typecomparison.StringAndStringComparison;
 
-import java.util.List;
-
 import static org.lox.typecomparison.ValueOperations.*;
 
-public class Interpreter implements ExpressionVisitor<Object>, StatementVisitor<Void> {
+public abstract class AbstractExpressionVisitor implements ExpressionVisitor<Object> {
 
-    private final JLoxErrorHandler errorHandler = new JLoxLexerErrorHandler();
     private final DoubleAndStringComparison doubleAndStringComparison = new DoubleAndStringComparison();
     private final StringAndDoubleComparison stringAndDoubleComparison = new StringAndDoubleComparison();
     private final StringAndStringComparison stringAndStringComparison = new StringAndStringComparison();
-
-    private Environment globalEnvironment = new Environment();
-
-    public void interpret(List<Statement> statements) {
-        try {
-            statements.forEach(this::execute);
-        } catch (RuntimeError error){
-            errorHandler.reportError(error.token, error.getMessage());
-        }
-    }
-
-    private void execute(Statement statement) {
-        statement.accept(this);
-    }
-
-    private String stringify(Object evaluatedExpression) {
-     if(evaluatedExpression == null) {
-         return "nil";
-     }
-     if(evaluatedExpression instanceof Double){
-         String text = evaluatedExpression.toString();
-         if(text.endsWith(".0")){
-             text = text.substring(0, text.length() - 2);
-         }
-         return text;
-     }
-     return evaluatedExpression.toString();
-    }
-
-    private Object evaluate(Expression expr) {
-        return expr.accept(this);
-    }
+    private final StringAndDoubleAddition stringAndDoubleAddition = new StringAndDoubleAddition();
 
     @Override
     public Object visitBinaryExpr(BinaryExpression expr) {
@@ -76,10 +35,10 @@ public class Interpreter implements ExpressionVisitor<Object>, StatementVisitor<
                     return (String) evaluatedLeftExpression + (String) evaluatedRightExpression;
                 }
                 if(isOperandsDoubleAndString(evaluatedLeftExpression, evaluatedRightExpression)){
-                    return ((Double) evaluatedLeftExpression).toString() + (String) evaluatedRightExpression;
+                    return stringAndDoubleAddition.addStringAndDouble((String) evaluatedRightExpression, (Double) evaluatedLeftExpression);
                 }
                 if(isOperandsStringAndDouble(evaluatedLeftExpression, evaluatedRightExpression)){
-                    return (String) evaluatedLeftExpression + ((Double) evaluatedRightExpression).toString();
+                    return stringAndDoubleAddition.addStringAndDouble((String) evaluatedLeftExpression, (Double) evaluatedRightExpression);
                 }
                 if(evaluatedLeftExpression instanceof Double && evaluatedRightExpression instanceof  Double) {
                     return (double) evaluatedLeftExpression + (double) evaluatedRightExpression;
@@ -132,7 +91,7 @@ public class Interpreter implements ExpressionVisitor<Object>, StatementVisitor<
                     return doubleAndStringComparison.lessOrEqual((Double) evaluatedLeftExpression, (String) evaluatedRightExpression);
                 }
                 if(isOperandsStringAndString(evaluatedLeftExpression, evaluatedRightExpression)){
-                   return stringAndStringComparison.lessOrEqual((String) evaluatedLeftExpression, (String) evaluatedRightExpression);
+                    return stringAndStringComparison.lessOrEqual((String) evaluatedLeftExpression, (String) evaluatedRightExpression);
                 }
                 checkNumberOperands(expr.getOperator(), evaluatedLeftExpression, evaluatedRightExpression);
                 return (double) evaluatedLeftExpression <= (double) evaluatedRightExpression;
@@ -144,26 +103,31 @@ public class Interpreter implements ExpressionVisitor<Object>, StatementVisitor<
         }
     }
 
+
+    protected Object evaluate(Expression expr) {
+        return expr.accept(this);
+    }
+
     @Override
     public Object visitGroupingExpr(GroupingExpression expr) {
-       return evaluate(expr.getGroupedExpression());
+        return evaluate(expr.getGroupedExpression());
     }
 
     @Override
     public Object visitLiteralExpr(LiteralExpression expr) {
-       return expr.getValue();
+        return expr.getValue();
     }
 
     @Override
     public Object visitUnaryExpr(UnaryExpression expr) {
-       Object right = evaluate(expr);
+        Object right = evaluate(expr);
 
-       switch(expr.getOperator().tokenType()){
-           case MINUS  -> { return -(double) right; }
-           case BANG  -> { return !isTruthy(right); }
-       }
+        switch(expr.getOperator().tokenType()){
+            case MINUS  -> { return -(double) right; }
+            case BANG  -> { return !isTruthy(right); }
+        }
 
-       return null;
+        return null;
     }
 
     @Override
@@ -176,54 +140,4 @@ public class Interpreter implements ExpressionVisitor<Object>, StatementVisitor<
         return evaluate(expr.getElseBranch());
     }
 
-    @Override
-    public Object visitVariableExpr(VariableExpression variableExpression) {
-        return globalEnvironment.getValue(variableExpression.getToken());
-    }
-
-    @Override
-    public Object visitAssignmentExpr(AssignmentExpression assignmentExpression) {
-      Object value = evaluate(assignmentExpression.getValue());
-      globalEnvironment.assign(assignmentExpression.getToken(), value);
-      return value;
-    }
-
-    @Override
-    public Void visitExpressionStatement(ExpressionStatement expressionStatement) {
-        evaluate(expressionStatement.getStatement());
-        return null;
-    }
-
-    @Override
-    public Void visitPrintStatement(PrintStatement printStatement) {
-        Object value = evaluate(printStatement.getStatement());
-        System.out.println(stringify(value));
-        return null;
-    }
-
-    @Override
-    public Void visitVariableStatement(VariableStatement variableStatement) {
-        Object value = null;
-        if(variableStatement.getExpression() != null) {
-            value = evaluate(variableStatement.getExpression());
-        }
-        globalEnvironment.define(variableStatement.getTokenName(), value);
-        return null;
-    }
-
-    @Override
-    public Void visitBlockStatement(BlockStatement blockStatement) {
-       executeBlock(blockStatement.getStatements(), new Environment(globalEnvironment));
-       return null;
-    }
-
-    private void executeBlock(List<Statement> statements, Environment environment) {
-        Environment previous = globalEnvironment;
-        try {
-            this.globalEnvironment = environment;
-            statements.forEach(this::execute);
-        } finally {
-            this.globalEnvironment = previous;
-        }
-    }
 }

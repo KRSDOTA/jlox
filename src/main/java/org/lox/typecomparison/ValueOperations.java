@@ -56,4 +56,18 @@ public class ValueOperations {
         }
         return true;
     }
+
+   public static String stringify(Object evaluatedExpression) {
+        if(evaluatedExpression == null) {
+            return "nil";
+        }
+        if(evaluatedExpression instanceof Double){
+            String text = evaluatedExpression.toString();
+            if(text.endsWith(".0")){
+                text = text.substring(0, text.length() - 2);
+            }
+            return text;
+        }
+        return evaluatedExpression.toString();
+    }
 }

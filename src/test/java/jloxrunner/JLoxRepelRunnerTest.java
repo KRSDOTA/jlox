@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 
 public class JLoxRepelRunnerTest {
 
-  final Runner jLoxRepelRunner = new Runner();
+  final Runner jLoxRepelRunner = new Runner(false);
 
   @Test
   void shouldRunPrompt() {

@@ -1,0 +1,24 @@
+ I have an interesting issue with the following:
+
+
+ "1000" + 30 = 10030.0
+
+ and 
+
+ "30" + 1000 = 30.01000
+
+ There's basically a bunch of weird and undefined behaviour with adding mixed types.
+
+ First port of call should be to:
+
+ 1) If you have a string and a number, try and parse the string.
+ 2)  If the String can't be parsed as a Double, then default to string concetenation
+
+ This should fix the addition operation for a double and a string back to being an associative operation:
+
+ "1000" + 30 = 1030.0 
+
+ and 
+
+ 30 + "1000" = 1030.0
+
