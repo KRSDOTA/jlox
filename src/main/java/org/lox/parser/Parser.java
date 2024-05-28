@@ -83,12 +83,16 @@ public class Parser {
        return expressionStatement();
     }
 
-//    private List<Statement> block() {
-//      List<Statement> statements = new ArrayList<>();
-//
-//      while(!check(RIGHT_BRACE)
-//
-//    }
+    private List<Statement> block() {
+      List<Statement> statements = new ArrayList<>();
+
+      while (!doesNextTokenMatch(RIGHT_BRACE) && !isAtEndOfTokenStream()){
+          statements.add(declaration());
+      }
+
+      consumeIfTokenMatchOtherwiseError(RIGHT_BRACE, "Expect '}' after block. ");
+      return statements;
+    }
 
     private Statement printStatement() {
         Expression value = expression();
