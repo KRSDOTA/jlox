@@ -103,7 +103,6 @@ public abstract class AbstractExpressionVisitor implements ExpressionVisitor<Obj
         }
     }
 
-
     protected Object evaluate(Expression expr) {
         return expr.accept(this);
     }
@@ -138,6 +137,28 @@ public abstract class AbstractExpressionVisitor implements ExpressionVisitor<Obj
         }
 
         return evaluate(expr.getElseBranch());
+    }
+
+    @Override
+    public Object visitLogicalExpression(LogicalExpression logicalExpression){
+        Object left = evaluate(logicalExpression.getLeft());
+        Object right = evaluate(logicalExpression.getRight());
+
+        switch (logicalExpression.getOperator().tokenType()){
+            case OR: {
+                if (isTruthy(left)){
+                    return true;
+                }
+                return isTruthy(right);
+            }
+            case AND:
+            {
+                return isTruthy(left) && isTruthy(right);
+            }
+            default: {
+                throw new RuntimeError(logicalExpression.getOperator(), "unsupported operation");
+            }
+        }
     }
 
 }

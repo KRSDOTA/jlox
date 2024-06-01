@@ -10,5 +10,6 @@ public interface ExpressionVisitor<T> {
   T visitConditionalExpr(ConditionalExpression conditionalExpression);
   T visitVariableExpr(VariableExpression variableExpression);
   T visitAssignmentExpr(AssignmentExpression assignmentExpression);
+  T visitLogicalExpression(LogicalExpression logicalExpression);
 }
 
