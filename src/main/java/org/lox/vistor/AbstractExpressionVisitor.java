@@ -1,6 +1,7 @@
 package org.lox.vistor;
 
 import org.lox.abstractsyntaxtree.expression.*;
+import org.lox.scanning.TokenType;
 import org.lox.typecomparison.DoubleAndStringComparison;
 import org.lox.typecomparison.StringAndDoubleAddition;
 import org.lox.typecomparison.StringAndDoubleComparison;
@@ -142,23 +143,15 @@ public abstract class AbstractExpressionVisitor implements ExpressionVisitor<Obj
     @Override
     public Object visitLogicalExpression(LogicalExpression logicalExpression){
         Object left = evaluate(logicalExpression.getLeft());
-        Object right = evaluate(logicalExpression.getRight());
-
-        switch (logicalExpression.getOperator().tokenType()){
-            case OR: {
-                if (isTruthy(left)){
-                    return true;
-                }
-                return isTruthy(right);
+        if(logicalExpression.getOperator().tokenType() == TokenType.OR) {
+            if(isTruthy(left)){
+                return left;
             }
-            case AND:
-            {
-                return isTruthy(left) && isTruthy(right);
-            }
-            default: {
-                throw new RuntimeError(logicalExpression.getOperator(), "unsupported operation");
-            }
+        } else if (logicalExpression.getOperator().tokenType() == TokenType.AND){
+           if(!isTruthy(left)) {
+               return left;
+           }
         }
+        return evaluate(logicalExpression.getRight());
     }
-
 }
