@@ -82,6 +82,14 @@ public class StatementInterpreter extends AbstractExpressionVisitor implements S
         return null;
     }
 
+    @Override
+    public Void visitWhileStatement(WhileStatement whileStatement) {
+        while(isTruthy(evaluate(whileStatement.getCondition()))){
+            execute(whileStatement.getStatement());
+        }
+        return null;
+    }
+
     private void executeBlock(List<Statement> statements, Environment environment) {
         Environment previous = globalEnvironment;
         try {

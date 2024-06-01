@@ -74,6 +74,10 @@ public class Parser {
             consumeToken();
             return printStatement();
         }
+        if(matchUnconsumedToken(WHILE)){
+            consumeToken();
+            return whileStatement();
+        }
         if(matchUnconsumedToken(IF)){
             consumeToken();
             return ifStatement();
@@ -89,6 +93,14 @@ public class Parser {
         Expression value = expression();
         consumeIfTokenMatchOtherwiseError(SEMICOLON, "Expect ';' after value ");
         return new PrintStatement(value);
+    }
+
+    private Statement whileStatement() {
+        consumeIfTokenMatchOtherwiseError(LEFT_PAREN, "Expect '(' after 'while' ");
+        Expression whileCondition = expression();
+        consumeIfTokenMatchOtherwiseError(RIGHT_PAREN, "Expect ')' before body of 'while' ");
+        Statement body = statement();
+        return new WhileStatement(whileCondition, body);
     }
 
     private Statement ifStatement() {
