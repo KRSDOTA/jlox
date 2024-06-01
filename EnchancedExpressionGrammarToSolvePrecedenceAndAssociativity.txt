@@ -7,12 +7,12 @@ expressionStatement     -> expression ";" ;
 ifStatement             -> "if" "(" expression ")" statement
                             ("else" statement )? ;
 printStatement          -> "print" expression ";" ;
-expression              -> assignment;
-assignment              -> IDENTIFIER "=" assignment | comma | logic_or;
+expression              -> comma;
+comma                   -> assignment ("," assignment)* ;
+assignment              -> IDENTIFIER "=" assignment | conditional ;
+conditional             -> logic_or ("?" expression : conditional)? ;
 logic_or                -> logic_and ( "or" logic_and )* ;
 logic_and               -> equality ( "and" equality )* ;
-comma                   -> conditional ("," conditional)* ;
-conditional             -> equality ("?" expression : conditional)? ;
 equality                -> comparison ( term ( "==" | "!=" ) comparison )* ;
 comparison              -> term ( ( ">" | ">=" | "<" | "<=" ) term )* ;
 term                    -> factor (factor ("-" | "+" ) factor)* ;
