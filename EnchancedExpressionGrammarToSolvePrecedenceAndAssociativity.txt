@@ -2,7 +2,8 @@ program                 -> declaration* EOF ;
 declaration             -> varDecl | statement;
 block                   -> "{" declaration* "}" ;
 varDecl                 -> "var" IDENTIFIER ("=" expression)? ";" ;
-statement               -> exprStatement | ifStatement | printStatement | whileStatement | block ;
+statement               -> exprStatement | forStatement | ifStatement | printStatement | whileStatement | block ;
+forStatement            -> "for" "(" (varDecl | expressionStatement | ";" ) expression? ";" expresion? ")" statement ;
 whileStatement          -> "while" "(" expression ")" statement ;
 expressionStatement     -> expression ";" ;
 ifStatement             -> "if" "(" expression ")" statement
