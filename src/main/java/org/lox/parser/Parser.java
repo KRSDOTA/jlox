@@ -70,6 +70,10 @@ public class Parser {
   }
 
   private Statement statement() {
+        if(matchUnconsumedToken(FOR)){
+            consumeToken();
+            return forStatement();
+        }
         if(matchUnconsumedToken(PRINT)){
             consumeToken();
             return printStatement();
@@ -87,6 +91,30 @@ public class Parser {
             return new BlockStatement(block());
         }
        return expressionStatement();
+    }
+
+    private Statement forStatement() {
+       consumeIfTokenMatchOtherwiseError(LEFT_PAREN, "Expect '(' after 'for' .");
+
+       Statement initaliser = null;
+//       if(matchUnconsumedToken(SEMICOLON)){
+//           initaliser = null;
+//       }
+       if(matchUnconsumedToken(VAR)){
+           consumeToken();
+           initaliser = varDeclaration();
+       }
+       else {
+           initaliser = expressionStatement();
+       }
+
+       Expression condition = null;
+       if(!doesNextTokenMatch(SEMICOLON)){
+           consumeToken();
+           condition = expression();
+       }
+       consumeIfTokenMatchOtherwiseError(SEMICOLON, "Expect ';' after loop condition");
+
     }
 
     private Statement printStatement() {
