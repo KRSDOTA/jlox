@@ -155,7 +155,7 @@ public class Parser {
     }
 
     private Expression conditional() {
-        Expression conditionalExpression = equality();
+        Expression conditionalExpression = or();
         if (matchUnconsumedToken(QUESTION)) {
             consumeToken();
             Expression thenBranch = expression();
@@ -165,6 +165,30 @@ public class Parser {
         }
 
         return conditionalExpression;
+    }
+
+    private Expression or(){
+        Expression expression = and();
+
+        while(matchUnconsumedToken(OR)){
+            Token operator = consumeToken();
+            Expression right = and();
+            expression = new LogicalExpression(expression, operator, right);
+        }
+
+        return expression;
+    }
+
+    private Expression and(){
+        Expression expression = equality();
+
+        while(matchUnconsumedToken(AND)){
+            Token operator = consumeToken();
+            Expression right = equality();
+            expression = new LogicalExpression(expression, operator, right);
+         }
+
+        return expression;
     }
 
     private Expression equality() {
