@@ -96,10 +96,11 @@ public class Parser {
     private Statement forStatement() {
        consumeIfTokenMatchOtherwiseError(LEFT_PAREN, "Expect '(' after 'for' .");
 
-       Statement initaliser = null;
-//       if(matchUnconsumedToken(SEMICOLON)){
-//           initaliser = null;
-//       }
+       Statement initaliser;
+       if(matchUnconsumedToken(SEMICOLON)){
+           consumeToken();
+           initaliser = null;
+       }
        if(matchUnconsumedToken(VAR)){
            consumeToken();
            initaliser = varDeclaration();
@@ -115,6 +116,29 @@ public class Parser {
        }
        consumeIfTokenMatchOtherwiseError(SEMICOLON, "Expect ';' after loop condition");
 
+       Expression increment = null;
+       if(!doesNextTokenMatch(RIGHT_PAREN)){
+           increment = expression();
+       }
+       consumeIfTokenMatchOtherwiseError(RIGHT_PAREN, "Expect ') after for clauses. ");
+
+       Statement body = statement();
+       if(increment != null){
+           body = new BlockStatement(
+            List.of(body, new ExpressionStatement(increment))
+           );
+       }
+
+       if(condition == null){
+           condition = new LiteralExpression(true);
+       }
+       body = new WhileStatement(condition, body);
+
+       if(initaliser != null){
+           body = new BlockStatement(List.of(initaliser, body));
+       }
+
+       return body;
     }
 
     private Statement printStatement() {
