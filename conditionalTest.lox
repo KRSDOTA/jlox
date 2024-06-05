@@ -1,0 +1,7 @@
+if ( 1 + 1 == 2 ) print "it works";
+ else print "boo you smell";
+
+
+if ( 1 + 1 == 2 and 5 >= "b" ) print "composite logic works";
+ else print "boo composite logic smells"; 
+
