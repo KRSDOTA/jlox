@@ -111,7 +111,6 @@ public class Parser {
 
        Expression condition = null;
        if(!doesNextTokenMatch(SEMICOLON)){
-           consumeToken();
            condition = expression();
        }
        consumeIfTokenMatchOtherwiseError(SEMICOLON, "Expect ';' after loop condition");
