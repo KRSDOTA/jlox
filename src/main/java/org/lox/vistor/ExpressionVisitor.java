@@ -11,5 +11,6 @@ public interface ExpressionVisitor<T> {
   T visitVariableExpr(VariableExpression variableExpression);
   T visitAssignmentExpr(AssignmentExpression assignmentExpression);
   T visitLogicalExpression(LogicalExpression logicalExpression);
+  T visitCallExpression(CallExpression callExpression);
 }
 

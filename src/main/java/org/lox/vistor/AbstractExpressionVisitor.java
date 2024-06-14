@@ -1,11 +1,15 @@
 package org.lox.vistor;
 
 import org.lox.abstractsyntaxtree.expression.*;
+import org.lox.callable.LoxCallable;
 import org.lox.scanning.TokenType;
 import org.lox.typecomparison.DoubleAndStringComparison;
 import org.lox.typecomparison.StringAndDoubleAddition;
 import org.lox.typecomparison.StringAndDoubleComparison;
 import org.lox.typecomparison.StringAndStringComparison;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.lox.typecomparison.ValueOperations.*;
 
@@ -153,5 +157,28 @@ public abstract class AbstractExpressionVisitor implements ExpressionVisitor<Obj
            }
         }
         return evaluate(logicalExpression.getRight());
+    }
+
+    @Override
+    public Object visitCallExpression(CallExpression callExpression) {
+       Object callee = evaluate(callExpression.getCallee());
+
+       List<Object> arguments = new ArrayList<>();
+
+       callExpression.getArguments().forEach(arg -> arguments.add(evaluate(arg)));
+
+       if(!(callee instanceof LoxCallable)){
+           throw new RuntimeError(callExpression.getParen(), "Can only call functions and classes");
+       }
+
+       LoxCallable function = (LoxCallable) callee;
+
+       if(arguments.size() != function.getArity()){
+           throw new RuntimeError(
+            callExpression.getParen(), "Expected " + function.getArity() + " arguments but got " + arguments.size() + "."
+           );
+       }
+
+        return function.call(this, arguments);
     }
 }

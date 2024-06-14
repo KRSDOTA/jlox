@@ -309,7 +309,40 @@ public class Parser {
             return new UnaryExpression(operator, right);
         }
 
-        return primary();
+        return call();
+    }
+
+    private Expression call(){
+        Expression expression = primary();
+
+        while(true){
+            if(matchUnconsumedToken(LEFT_PAREN)){
+                consumeToken();
+                expression = finishCall(expression);
+            } else {
+                break;
+            }
+        }
+
+        return expression;
+    }
+
+    private Expression finishCall(Expression callee){
+        List<Expression> arguments = new ArrayList<>();
+        if(!doesNextTokenMatch(RIGHT_PAREN)){
+           arguments.add(expression());
+          while (matchUnconsumedToken(COMMA)) {
+              if(arguments.size() >= 255){
+                  error(tokens.get(current), "What the hell are you doing having a function take more than 255 arguments");
+              }
+              consumeToken();
+              arguments.add(expression());
+          }
+        }
+
+        Token paren = consumeIfTokenMatchOtherwiseError(RIGHT_PAREN, "Expect ')' after argument");
+
+        return new CallExpression(callee, paren, arguments);
     }
 
     private Expression primary() {
