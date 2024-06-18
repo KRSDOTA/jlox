@@ -4,6 +4,7 @@ import org.lox.Environment;
 import org.lox.abstractsyntaxtree.expression.AssignmentExpression;
 import org.lox.abstractsyntaxtree.expression.VariableExpression;
 import org.lox.abstractsyntaxtree.statement.*;
+import org.lox.callable.LoxCallable;
 import org.lox.errorhandler.JLoxErrorHandler;
 import org.lox.errorhandler.JLoxLexerErrorHandler;
 
@@ -16,7 +17,27 @@ public class StatementInterpreter extends AbstractExpressionVisitor implements S
 
     private final JLoxErrorHandler errorHandler = new JLoxLexerErrorHandler();
 
-    private Environment globalEnvironment = new Environment();
+    private Environment globals = new Environment();
+    private Environment environments = globals;
+
+    public StatementInterpreter(){
+        globals.define("clock", new LoxCallable() {
+            @Override
+            public int getArity() {
+                return 0;
+            }
+
+            @Override
+            public Object call(AbstractExpressionVisitor interpreter, List<Object> arguments) {
+                return (double) System.currentTimeMillis() / 1000.0;
+            }
+
+            @Override
+            public String toString(){
+                return "<native function>";
+            }
+        });
+    }
 
     public void interpret(List<Statement> statements) {
         try {
@@ -32,13 +53,13 @@ public class StatementInterpreter extends AbstractExpressionVisitor implements S
 
     @Override
     public Object visitVariableExpr(VariableExpression variableExpression) {
-        return globalEnvironment.getValue(variableExpression.getToken());
+        return globals.getValue(variableExpression.getToken());
     }
 
     @Override
     public Object visitAssignmentExpr(AssignmentExpression assignmentExpression) {
       Object value = evaluate(assignmentExpression.getValue());
-      globalEnvironment.assign(assignmentExpression.getToken(), value);
+      globals.assign(assignmentExpression.getToken(), value);
       return value;
     }
 
@@ -61,13 +82,13 @@ public class StatementInterpreter extends AbstractExpressionVisitor implements S
         if(variableStatement.getExpression() != null) {
             value = evaluate(variableStatement.getExpression());
         }
-        globalEnvironment.define(variableStatement.getTokenName(), value);
+        globals.define(variableStatement.getTokenName(), value);
         return null;
     }
 
     @Override
     public Void visitBlockStatement(BlockStatement blockStatement) {
-       executeBlock(blockStatement.getStatements(), new Environment(globalEnvironment));
+       executeBlock(blockStatement.getStatements(), new Environment(globals));
        return null;
     }
 
@@ -91,12 +112,12 @@ public class StatementInterpreter extends AbstractExpressionVisitor implements S
     }
 
     private void executeBlock(List<Statement> statements, Environment environment) {
-        Environment previous = globalEnvironment;
+        Environment previous = globals;
         try {
-            this.globalEnvironment = environment;
+            this.globals= environment;
             statements.forEach(this::execute);
         } finally {
-            this.globalEnvironment = previous;
+            this.globals= previous;
         }
     }
 }

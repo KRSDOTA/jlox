@@ -24,6 +24,10 @@ public class Environment {
     declarationLookup.put(token.lexeme(), value);
   }
 
+  public void define(String string, Object value){
+   declarationLookup.put(string, value);
+  }
+
   public Object getValue(Token token) {
     if(declarationLookup.containsKey(token.lexeme())){
       return declarationLookup.get(token.lexeme());
