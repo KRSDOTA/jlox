@@ -44,6 +44,10 @@ public class Parser {
 
   private Statement declaration() {
     try {
+    if(matchUnconsumedToken(FUN)){
+        consumeToken();
+        return function("function");
+    }
      if(matchUnconsumedToken(VAR)) {
        consumeToken();
        return varDeclaration();
@@ -55,7 +59,22 @@ public class Parser {
     }
   }
 
-  private Statement varDeclaration() {
+    private Statement function(String kind) {
+        Token name = consumeIfTokenMatchOtherwiseError(IDENTIFIER, "Expect " + kind + " name.");
+        List<Token> parameters = new ArrayList<>();
+
+        if(!doesNextTokenMatch(RIGHT_PAREN)){
+           do {
+              if(parameters.size() >= 255) {
+                  error(tokens.get(current), "can;t have more than 255 parameters");
+              }
+              parameters.add(consumeIfTokenMatchOtherwiseError(IDENTIFIER, "Expect parameter name"));
+           } while(matchUnconsumedToken(COMMA));
+        }
+        consumeIfTokenMatchOtherwiseError(RIGHT_PAREN, "Expect ')' after parameters");
+    }
+
+    private Statement varDeclaration() {
     Token name = consumeIfTokenMatchOtherwiseError(IDENTIFIER, "Expected a variable name");
 
     Expression initaliser = null;
