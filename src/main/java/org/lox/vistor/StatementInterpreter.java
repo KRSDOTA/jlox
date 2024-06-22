@@ -17,10 +17,7 @@ public class StatementInterpreter extends AbstractExpressionVisitor implements S
 
     private final JLoxErrorHandler errorHandler = new JLoxLexerErrorHandler();
 
-    private Environment globals = new Environment();
-    private Environment environments = globals;
-
-    public StatementInterpreter(){
+    public StatementInterpreter() {
         globals.define("clock", new LoxCallable() {
             @Override
             public int getArity() {
@@ -33,7 +30,7 @@ public class StatementInterpreter extends AbstractExpressionVisitor implements S
             }
 
             @Override
-            public String toString(){
+            public String toString() {
                 return "<native function>";
             }
         });
@@ -42,7 +39,7 @@ public class StatementInterpreter extends AbstractExpressionVisitor implements S
     public void interpret(List<Statement> statements) {
         try {
             statements.forEach(this::execute);
-        } catch (RuntimeError error){
+        } catch (RuntimeError error) {
             errorHandler.reportError(error.token, error.getMessage());
         }
     }
@@ -58,9 +55,9 @@ public class StatementInterpreter extends AbstractExpressionVisitor implements S
 
     @Override
     public Object visitAssignmentExpr(AssignmentExpression assignmentExpression) {
-      Object value = evaluate(assignmentExpression.getValue());
-      globals.assign(assignmentExpression.getToken(), value);
-      return value;
+        Object value = evaluate(assignmentExpression.getValue());
+        globals.assign(assignmentExpression.getToken(), value);
+        return value;
     }
 
     @Override
@@ -79,7 +76,7 @@ public class StatementInterpreter extends AbstractExpressionVisitor implements S
     @Override
     public Void visitVariableStatement(VariableStatement variableStatement) {
         Object value = null;
-        if(variableStatement.getExpression() != null) {
+        if (variableStatement.getExpression() != null) {
             value = evaluate(variableStatement.getExpression());
         }
         globals.define(variableStatement.getTokenName(), value);
@@ -88,8 +85,8 @@ public class StatementInterpreter extends AbstractExpressionVisitor implements S
 
     @Override
     public Void visitBlockStatement(BlockStatement blockStatement) {
-       executeBlock(blockStatement.getStatements(), new Environment(globals));
-       return null;
+        executeBlock(blockStatement.getStatements(), new Environment(globals));
+        return null;
     }
 
     @Override
@@ -105,7 +102,7 @@ public class StatementInterpreter extends AbstractExpressionVisitor implements S
 
     @Override
     public Void visitWhileStatement(WhileStatement whileStatement) {
-        while(isTruthy(evaluate(whileStatement.getCondition()))){
+        while (isTruthy(evaluate(whileStatement.getCondition()))) {
             execute(whileStatement.getStatement());
         }
         return null;
@@ -114,10 +111,16 @@ public class StatementInterpreter extends AbstractExpressionVisitor implements S
     private void executeBlock(List<Statement> statements, Environment environment) {
         Environment previous = globals;
         try {
-            this.globals= environment;
+            this.globals = environment;
             statements.forEach(this::execute);
         } finally {
-            this.globals= previous;
+            this.globals = previous;
         }
     }
+
+    @Override
+    public Void visitFunctionDeclaration(FunctionDeclaration functionDeclaration) {
+        return null;
+    }
+
 }

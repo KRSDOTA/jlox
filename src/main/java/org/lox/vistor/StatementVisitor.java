@@ -16,5 +16,5 @@ public interface StatementVisitor<T> {
 
     T visitWhileStatement(WhileStatement whileStatement);
 
-    T visitFunctionDeclaration(FunctionDeclarion functionDeclaration);
+    T visitFunctionDeclaration(FunctionDeclaration functionDeclaration);
 }
