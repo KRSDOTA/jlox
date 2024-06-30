@@ -8,8 +8,8 @@ import org.lox.errorhandler.JLoxLexerErrorHandler;
 import org.lox.parser.Parser;
 import org.lox.scanning.Scanner;
 import org.lox.scanning.Token;
+import org.lox.vistor.Interpreter;
 import org.lox.vistor.SingleExpressionInterpreter;
-import org.lox.vistor.StatementInterpreter;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -24,7 +24,7 @@ public class Runner implements JLoxRunner {
   private final InputStreamReader input = new InputStreamReader(System.in);
   private final BufferedReader reader = new BufferedReader(input);
   private final JLoxErrorHandler jLoxErrorHandler = new JLoxLexerErrorHandler();
-  private final StatementInterpreter statementInterpreter = new StatementInterpreter();
+  private final Interpreter interpreter = new Interpreter();
   private final SingleExpressionInterpreter singleExpressionInterpreter = new SingleExpressionInterpreter();
   private final boolean replEnabled;
 
@@ -61,7 +61,7 @@ public class Runner implements JLoxRunner {
     if(containsSingleExpression(statements) && replEnabled) {
       singleExpressionInterpreter.interpret(((ExpressionStatement) statements.get(0)).getStatement());
     } else {
-      statementInterpreter.interpret(statements);
+      interpreter.interpret(statements);
     }
   }
 

@@ -18,4 +18,6 @@ public interface ExpressionVisitor<T> {
   T visitAssignmentExpr(AssignmentExpression assignmentExpression);
 
   T visitLogicalExpression(LogicalExpression logicalExpression);
+
+  T visitCallExpression(CallExpression callExpression);
 }

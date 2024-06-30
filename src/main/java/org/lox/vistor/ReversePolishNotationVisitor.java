@@ -58,4 +58,9 @@ public class ReversePolishNotationVisitor implements ExpressionVisitor<String> {
   public String visitLogicalExpression(LogicalExpression logicalExpression) {
     return "";
   }
+
+  @Override
+  public String visitCallExpression(CallExpression callExpression) {
+    return "";
+  }
 }

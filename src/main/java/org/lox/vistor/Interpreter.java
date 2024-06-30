@@ -2,19 +2,23 @@ package org.lox.vistor;
 
 import org.lox.Environment;
 import org.lox.abstractsyntaxtree.expression.*;
+import org.lox.abstractsyntaxtree.statement.*;
 import org.lox.callable.LoxCallable;
+import org.lox.callable.LoxFunction;
 import org.lox.scanning.TokenType;
 import org.lox.typecomparison.DoubleAndStringComparison;
 import org.lox.typecomparison.StringAndDoubleAddition;
 import org.lox.typecomparison.StringAndDoubleComparison;
 import org.lox.typecomparison.StringAndStringComparison;
+import org.lox.errorhandler.JLoxErrorHandler;
+import org.lox.errorhandler.JLoxLexerErrorHandler;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.lox.typecomparison.ValueOperations.*;
 
-public abstract class AbstractExpressionVisitor implements ExpressionVisitor<Object> {
+public class Interpreter implements StatementVisitor<Void>, ExpressionVisitor<Object> {
 
     public Environment globals = new Environment();
     public Environment environments = globals;
@@ -23,6 +27,34 @@ public abstract class AbstractExpressionVisitor implements ExpressionVisitor<Obj
     private final StringAndDoubleComparison stringAndDoubleComparison = new StringAndDoubleComparison();
     private final StringAndStringComparison stringAndStringComparison = new StringAndStringComparison();
     private final StringAndDoubleAddition stringAndDoubleAddition = new StringAndDoubleAddition();
+    private final JLoxErrorHandler errorHandler = new JLoxLexerErrorHandler();
+
+    public Interpreter() {
+        globals.define("clock", new LoxCallable() {
+            @Override
+            public int getArity() {
+                return 0;
+            }
+
+            @Override
+            public Object call(Interpreter interpreter, List<Object> arguments) {
+                return (double) System.currentTimeMillis() / 1000.0;
+            }
+
+            @Override
+            public String toString() {
+                return "<native function>";
+            }
+        });
+    }
+
+    public void interpret(List<Statement> statements) {
+        try {
+            statements.forEach(this::execute);
+        } catch (RuntimeError error) {
+            errorHandler.reportError(error.token, error.getMessage());
+        }
+    }
 
     @Override
     public Object visitBinaryExpr(BinaryExpression expr) {
@@ -140,17 +172,14 @@ public abstract class AbstractExpressionVisitor implements ExpressionVisitor<Obj
         return expr.accept(this);
     }
 
-    @Override
     public Object visitGroupingExpr(GroupingExpression expr) {
         return evaluate(expr.getGroupedExpression());
     }
 
-    @Override
     public Object visitLiteralExpr(LiteralExpression expr) {
         return expr.getValue();
     }
 
-    @Override
     public Object visitUnaryExpr(UnaryExpression expr) {
         Object right = evaluate(expr);
 
@@ -166,7 +195,6 @@ public abstract class AbstractExpressionVisitor implements ExpressionVisitor<Obj
         return null;
     }
 
-    @Override
     public Object visitConditionalExpr(ConditionalExpression expr) {
         Object conditional = evaluate(expr.getExpression());
         if (isTruthy(conditional)) {
@@ -176,7 +204,6 @@ public abstract class AbstractExpressionVisitor implements ExpressionVisitor<Obj
         return evaluate(expr.getElseBranch());
     }
 
-    @Override
     public Object visitLogicalExpression(LogicalExpression logicalExpression) {
         Object left = evaluate(logicalExpression.getLeft());
         if (logicalExpression.getOperator().tokenType() == TokenType.OR) {
@@ -211,7 +238,100 @@ public abstract class AbstractExpressionVisitor implements ExpressionVisitor<Obj
                     "Expected " + function.getArity() + " arguments but got " + arguments.size() + ".");
         }
 
-        return null;
-//        return function.call(this, arguments);
+        return function.call(this, arguments);
     }
+
+    private void execute(Statement statement) {
+        statement.accept(this);
+    }
+
+    @Override
+    public Object visitVariableExpr(VariableExpression variableExpression) {
+        return globals.getValue(variableExpression.getToken());
+    }
+
+    @Override
+    public Object visitAssignmentExpr(AssignmentExpression assignmentExpression) {
+        Object value = evaluate(assignmentExpression.getValue());
+        globals.assign(assignmentExpression.getToken(), value);
+        return value;
+    }
+
+    @Override
+    public Void visitExpressionStatement(ExpressionStatement expressionStatement) {
+        evaluate(expressionStatement.getStatement());
+        return null;
+    }
+
+    @Override
+    public Void visitPrintStatement(PrintStatement printStatement) {
+        Object value = evaluate(printStatement.getStatement());
+        System.out.println(stringify(value));
+        return null;
+    }
+
+    @Override
+    public Void visitVariableStatement(VariableStatement variableStatement) {
+        Object value = null;
+        if (variableStatement.getExpression() != null) {
+            value = evaluate(variableStatement.getExpression());
+        }
+        globals.define(variableStatement.getTokenName(), value);
+        return null;
+    }
+
+    @Override
+    public Void visitBlockStatement(BlockStatement blockStatement) {
+        executeBlock(blockStatement.getStatements(), new Environment(globals));
+        return null;
+    }
+
+    @Override
+    public Void visitIfStatement(IfStatement ifStatement) {
+        Object conditionalValue = evaluate(ifStatement.getCondition());
+        if (isTruthy(conditionalValue)) {
+            execute(ifStatement.getThenBranch());
+        } else {
+            execute(ifStatement.getElseBranch());
+        }
+        return null;
+    }
+
+    @Override
+    public Void visitWhileStatement(WhileStatement whileStatement) {
+        while (isTruthy(evaluate(whileStatement.getCondition()))) {
+            execute(whileStatement.getStatement());
+        }
+        return null;
+    }
+
+    public void executeBlock(List<Statement> statements, Environment environment) {
+        Environment previous = globals;
+        try {
+            this.globals = environment;
+            statements.forEach(this::execute);
+        } finally {
+            this.globals = previous;
+        }
+    }
+
+    @Override
+    public Void visitFunctionDeclaration(FunctionDeclaration functionDeclaration) {
+        LoxFunction function = new LoxFunction(functionDeclaration);
+        environments.define(functionDeclaration.getName(), function);
+        return null;
+    }
+
+    @Override
+    public Void visitReturnStatement(ReturnStatement returnStatement) {
+        Object value = null;
+
+        if(returnStatement.getValue() != null){
+            value = evaluate(returnStatement.getValue());
+        }
+
+        throw new Return(value);
+    }
+
+
 }

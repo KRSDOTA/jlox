@@ -60,7 +60,8 @@ public class Parser {
     }
 
     private Statement function(String kind) {
-        Token name = consumeIfTokenMatchOtherwiseError(LEFT_PAREN, "Expect '(' " + kind + " name.");
+        Token name = consumeIfTokenMatchOtherwiseError(IDENTIFIER, "Expect " + kind + " name.");
+        consumeIfTokenMatchOtherwiseError(LEFT_PAREN, "Expect '(' after " + kind + " name.");
 
         List<Token> parameters = new ArrayList<>();
         if (!doesNextTokenMatch(RIGHT_PAREN)) {
@@ -103,6 +104,10 @@ public class Parser {
         if (matchUnconsumedToken(PRINT)) {
             consumeToken();
             return printStatement();
+        }
+        if(matchUnconsumedToken(RETURN)){
+            consumeToken();
+            return returnStatement();
         }
         if (matchUnconsumedToken(WHILE)) {
             consumeToken();
@@ -168,6 +173,17 @@ public class Parser {
         Expression value = expression();
         consumeIfTokenMatchOtherwiseError(SEMICOLON, "Expect ';' after value ");
         return new PrintStatement(value);
+    }
+
+    private Statement returnStatement() {
+        Token keyword = this.tokens.get(current-1);
+        Expression value = null;
+        if(!doesNextTokenMatch(SEMICOLON)){
+            value = expression();
+        }
+
+        consumeIfTokenMatchOtherwiseError(SEMICOLON, "Expect ; after return value");
+        return new ReturnStatement(keyword, value);
     }
 
     private Statement whileStatement() {
