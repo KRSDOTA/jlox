@@ -291,7 +291,7 @@ public class Interpreter implements StatementVisitor<Void>, ExpressionVisitor<Ob
         Object conditionalValue = evaluate(ifStatement.getCondition());
         if (isTruthy(conditionalValue)) {
             execute(ifStatement.getThenBranch());
-        } else {
+        } else if(ifStatement.getElseBranch() != null){
             execute(ifStatement.getElseBranch());
         }
         return null;
