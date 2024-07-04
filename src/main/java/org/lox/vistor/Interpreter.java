@@ -21,7 +21,7 @@ import static org.lox.typecomparison.ValueOperations.*;
 public class Interpreter implements StatementVisitor<Void>, ExpressionVisitor<Object> {
 
     public Environment globals = new Environment();
-    public Environment environments = globals;
+    public Environment environment = globals;
 
     private final DoubleAndStringComparison doubleAndStringComparison = new DoubleAndStringComparison();
     private final StringAndDoubleComparison stringAndDoubleComparison = new StringAndDoubleComparison();
@@ -317,8 +317,8 @@ public class Interpreter implements StatementVisitor<Void>, ExpressionVisitor<Ob
 
     @Override
     public Void visitFunctionDeclaration(FunctionDeclaration functionDeclaration) {
-        LoxFunction function = new LoxFunction(functionDeclaration);
-        environments.define(functionDeclaration.getName(), function);
+        LoxFunction function = new LoxFunction(functionDeclaration, environment);
+        environment.define(functionDeclaration.getName(), function);
         return null;
     }
 

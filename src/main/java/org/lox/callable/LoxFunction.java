@@ -10,9 +10,11 @@ import java.util.List;
 public class LoxFunction implements LoxCallable {
 
     private FunctionDeclaration functionDeclaration;
+    private final Environment closure;
 
-    public LoxFunction(FunctionDeclaration functionDeclaration) {
+    public LoxFunction(FunctionDeclaration functionDeclaration, Environment closure) {
         this.functionDeclaration = functionDeclaration;
+        this.closure = closure;
     }
 
     public int getArity() {
@@ -20,7 +22,7 @@ public class LoxFunction implements LoxCallable {
     }
 
     public Object call(Interpreter interpreter, List<Object> arguments) {
-        Environment environment = new Environment(interpreter.globals);
+        Environment environment = new Environment(closure);
 
         for (int i = 0; i < arguments.size(); i++) {
             environment.define(functionDeclaration.getParams().get(i), arguments.get(i));
