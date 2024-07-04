@@ -247,13 +247,13 @@ public class Interpreter implements StatementVisitor<Void>, ExpressionVisitor<Ob
 
     @Override
     public Object visitVariableExpr(VariableExpression variableExpression) {
-        return globals.getValue(variableExpression.getToken());
+        return environment.getValue(variableExpression.getToken());
     }
 
     @Override
     public Object visitAssignmentExpr(AssignmentExpression assignmentExpression) {
         Object value = evaluate(assignmentExpression.getValue());
-        globals.assign(assignmentExpression.getToken(), value);
+        environment.assign(assignmentExpression.getToken(), value);
         return value;
     }
 
@@ -276,13 +276,13 @@ public class Interpreter implements StatementVisitor<Void>, ExpressionVisitor<Ob
         if (variableStatement.getExpression() != null) {
             value = evaluate(variableStatement.getExpression());
         }
-        globals.define(variableStatement.getTokenName(), value);
+        environment.define(variableStatement.getTokenName(), value);
         return null;
     }
 
     @Override
     public Void visitBlockStatement(BlockStatement blockStatement) {
-        executeBlock(blockStatement.getStatements(), new Environment(globals));
+        executeBlock(blockStatement.getStatements(), new Environment(environment));
         return null;
     }
 
@@ -306,12 +306,12 @@ public class Interpreter implements StatementVisitor<Void>, ExpressionVisitor<Ob
     }
 
     public void executeBlock(List<Statement> statements, Environment environment) {
-        Environment previous = globals;
+        Environment previous = this.environment;
         try {
-            this.globals = environment;
+            this.environment = environment;
             statements.forEach(this::execute);
         } finally {
-            this.globals = previous;
+            this.environment = previous;
         }
     }
 
