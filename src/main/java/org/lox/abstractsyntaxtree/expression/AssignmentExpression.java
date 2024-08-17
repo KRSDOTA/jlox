@@ -3,7 +3,7 @@ package org.lox.abstractsyntaxtree.expression;
 import org.lox.scanning.Token;
 import org.lox.vistor.ExpressionVisitor;
 
-public class AssignmentExpression extends Expression{
+public class AssignmentExpression extends Expression {
 
   private final Expression value;
   private final Token token;
