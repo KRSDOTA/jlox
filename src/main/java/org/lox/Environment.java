@@ -51,4 +51,20 @@ public class Environment {
 
    throw new RuntimeError(name, "undefined variable '" + name.lexeme() + "'.");
   }
+
+  public Object getAt(int distance, String name) {
+    return ancestor(distance).declarationLookup.get(name);
+  }
+
+  public void assignAt(int distance, Token name, Object value) {
+    ancestor(distance).declarationLookup.put(name.lexeme(), value);
+  }
+
+  private Environment ancestor(int distance) {
+    Environment environment = this;
+    for (int i = 0; i < distance; i++) {
+     environment = environment.enclosedScope.get();
+    }
+    return environment;
+  }
 }

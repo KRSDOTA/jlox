@@ -5,6 +5,7 @@ import org.lox.abstractsyntaxtree.expression.*;
 import org.lox.abstractsyntaxtree.statement.*;
 import org.lox.callable.LoxCallable;
 import org.lox.callable.LoxFunction;
+import org.lox.scanning.Token;
 import org.lox.scanning.TokenType;
 import org.lox.typecomparison.DoubleAndStringComparison;
 import org.lox.typecomparison.StringAndDoubleAddition;
@@ -14,7 +15,9 @@ import org.lox.errorhandler.JLoxErrorHandler;
 import org.lox.errorhandler.JLoxLexerErrorHandler;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.lox.typecomparison.ValueOperations.*;
 
@@ -22,6 +25,7 @@ public class Interpreter implements StatementVisitor<Void>, ExpressionVisitor<Ob
 
     public Environment globals = new Environment();
     public Environment environment = globals;
+    private final Map<Expression, Integer> locals = new HashMap<>();
 
     private final DoubleAndStringComparison doubleAndStringComparison = new DoubleAndStringComparison();
     private final StringAndDoubleComparison stringAndDoubleComparison = new StringAndDoubleComparison();
@@ -245,15 +249,35 @@ public class Interpreter implements StatementVisitor<Void>, ExpressionVisitor<Ob
         statement.accept(this);
     }
 
+    void resolve(Expression expression, int depth) {
+        locals.put(expression, depth);
+    }
+
     @Override
     public Object visitVariableExpr(VariableExpression variableExpression) {
-        return environment.getValue(variableExpression.getToken());
+        return lookupVariable(variableExpression.getToken(), variableExpression);
+    }
+
+    private Object lookupVariable(Token name, Expression expression) {
+        Integer distance = locals.get(expression);
+        if (distance != null) {
+           return environment.getAt(distance, name.lexeme());
+        } else {
+            return globals.getValue(name);
+        }
     }
 
     @Override
     public Object visitAssignmentExpr(AssignmentExpression assignmentExpression) {
         Object value = evaluate(assignmentExpression.getValue());
-        environment.assign(assignmentExpression.getToken(), value);
+
+        Integer distance = locals.get(assignmentExpression);
+        if (distance != null) {
+          environment.assignAt(distance, assignmentExpression.getToken(), value);
+        } else {
+            globals.assign(assignmentExpression.getToken(), value);
+        }
+
         return value;
     }
 

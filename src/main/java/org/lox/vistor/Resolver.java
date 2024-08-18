@@ -153,7 +153,7 @@ public class Resolver implements ExpressionVisitor<Void>, StatementVisitor<Void>
         scopes.pop();
     }
 
-    private void resolve(List<Statement> statements) {
+    public void resolve(List<Statement> statements) {
        statements.forEach(this::resolve);
     }
 

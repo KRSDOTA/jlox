@@ -9,6 +9,7 @@ import org.lox.parser.Parser;
 import org.lox.scanning.Scanner;
 import org.lox.scanning.Token;
 import org.lox.vistor.Interpreter;
+import org.lox.vistor.Resolver;
 import org.lox.vistor.SingleExpressionInterpreter;
 
 import java.io.BufferedReader;
@@ -55,8 +56,11 @@ public class Runner implements JLoxRunner {
     final List<Statement> statements = parser.parse();
 
     if (parser.hadError()) {
-      System.exit(65);
+      System.exit(-1);
     }
+
+    Resolver resolver = new Resolver(interpreter);
+    resolver.resolve(statements);
 
     if(containsSingleExpression(statements) && replEnabled) {
       singleExpressionInterpreter.interpret(((ExpressionStatement) statements.get(0)).getStatement());
