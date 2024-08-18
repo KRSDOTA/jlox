@@ -59,8 +59,12 @@ public class Runner implements JLoxRunner {
       System.exit(-1);
     }
 
-    Resolver resolver = new Resolver(interpreter);
+    final Resolver resolver = new Resolver(interpreter);
     resolver.resolve(statements);
+
+    if(resolver.hadError()) {
+      System.exit(-1);
+    }
 
     if(containsSingleExpression(statements) && replEnabled) {
       singleExpressionInterpreter.interpret(((ExpressionStatement) statements.get(0)).getStatement());

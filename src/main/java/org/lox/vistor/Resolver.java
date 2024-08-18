@@ -22,9 +22,14 @@ public class Resolver implements ExpressionVisitor<Void>, StatementVisitor<Void>
     private final Interpreter interpreter;
     private final Stack<Map<String, Boolean>> scopes = new Stack<>();
     private final JLoxErrorHandler errorHandler = new JLoxLexerErrorHandler();
+    private FunctionType currentFunction = FunctionType.NONE;
 
     public Resolver(Interpreter interpreter) {
         this.interpreter = interpreter;
+    }
+
+    public boolean hadError() {
+       return errorHandler.hadError();
     }
 
     @Override
@@ -102,7 +107,7 @@ public class Resolver implements ExpressionVisitor<Void>, StatementVisitor<Void>
 
     @Override
     public Void visitExpressionStatement(ExpressionStatement expressionStatement) {
-        resolve(expressionStatement);
+        resolve(expressionStatement.getStatement());
         return null;
     }
 
@@ -123,10 +128,13 @@ public class Resolver implements ExpressionVisitor<Void>, StatementVisitor<Void>
     }
 
     private void declare(Token tokenName) {
-        if(scopes.isEmpty()) {
+        if (scopes.isEmpty()) {
             return;
         }
         Map<String, Boolean> scope = scopes.peek();
+        if (scope.containsKey(tokenName.lexeme())) {
+           errorHandler.reportError(tokenName, "Already have a name with this variable in scope");
+        }
         scope.put(tokenName.lexeme(), false);
     }
 
@@ -186,11 +194,14 @@ public class Resolver implements ExpressionVisitor<Void>, StatementVisitor<Void>
     public Void visitFunctionDeclaration(FunctionDeclaration functionDeclaration) {
         declare(functionDeclaration.getName());
         define(functionDeclaration.getName());
-        resolveFunction(functionDeclaration);
+        resolveFunction(functionDeclaration, FunctionType.FUNCTION);
         return null;
     }
 
-    private void resolveFunction(FunctionDeclaration functionDeclaration) {
+    private void resolveFunction(FunctionDeclaration functionDeclaration, FunctionType functionType) {
+        FunctionType enclosingFunction = currentFunction;
+        currentFunction = functionType;
+
         beginScope();
         functionDeclaration.getParams().forEach(param -> {
             declare(param);
@@ -198,10 +209,14 @@ public class Resolver implements ExpressionVisitor<Void>, StatementVisitor<Void>
         });
         resolve(functionDeclaration.getBody());
         endScope();
+        currentFunction = enclosingFunction;
     }
 
     @Override
     public Void visitReturnStatement(ReturnStatement returnStatement) {
+        if (currentFunction == FunctionType.NONE) {
+          errorHandler.reportError(returnStatement.getKeyword(), "Can't return from top level code.");
+        }
         resolve(returnStatement);
         return null;
     }
