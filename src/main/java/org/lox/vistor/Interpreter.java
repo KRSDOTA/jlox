@@ -357,5 +357,13 @@ public class Interpreter implements StatementVisitor<Void>, ExpressionVisitor<Ob
         throw new Return(value);
     }
 
+    @Override
+    public Void visitClassDeclaration(ClassDeclaration classDeclaration) {
+       environment.define(classDeclaration.getName().lexeme(), null);
+       LoxClass klass = new LoxClass(classDeclaration.getName().lexeme());
+       environment.assign(classDeclaration.getName(), klass);
+       return null;
+    }
+
 
 }

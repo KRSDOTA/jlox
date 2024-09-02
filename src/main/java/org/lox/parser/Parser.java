@@ -44,6 +44,10 @@ public class Parser {
 
     private Statement declaration() {
         try {
+            if (matchUnconsumedToken(CLASS)) {
+              consumeToken();
+              return classDeclaration();
+            }
             if (matchUnconsumedToken(FUN)) {
                 consumeToken();
                 return function("function");
@@ -59,7 +63,19 @@ public class Parser {
         }
     }
 
-    private Statement function(String kind) {
+    private Statement classDeclaration() {
+        Token name = consumeIfTokenMatchOtherwiseError(IDENTIFIER, "expect class name");
+        consumeIfTokenMatchOtherwiseError(LEFT_BRACE, "expected a '{' after class name");
+
+        List<FunctionDeclaration> methods = new ArrayList<>();
+        while(!doesNextTokenMatch(RIGHT_BRACE) && !isAtEndOfTokenStream()) {
+            methods.add(function("method"));
+        }
+
+        return new ClassDeclaration(name, methods);
+    }
+
+    private FunctionDeclaration function(String kind) {
         Token name = consumeIfTokenMatchOtherwiseError(IDENTIFIER, "Expect " + kind + " name.");
         consumeIfTokenMatchOtherwiseError(LEFT_PAREN, "Expect '(' after " + kind + " name.");
 

@@ -220,4 +220,11 @@ public class Resolver implements ExpressionVisitor<Void>, StatementVisitor<Void>
         resolve(returnStatement);
         return null;
     }
+
+    @Override
+    public Void visitClassDeclaration(ClassDeclaration classDeclaration) {
+        declare(classDeclaration.getName());
+        define(classDeclaration.getName());
+        return null;
+    }
 }

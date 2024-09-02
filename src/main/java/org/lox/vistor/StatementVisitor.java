@@ -20,4 +20,6 @@ public interface StatementVisitor<T> {
 
     T visitReturnStatement(ReturnStatement returnStatement);
 
+    T visitClassDeclaration(ClassDeclaration classDeclaration);
+
 }
