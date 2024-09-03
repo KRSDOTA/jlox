@@ -257,6 +257,19 @@ public class Interpreter implements StatementVisitor<Void>, ExpressionVisitor<Ob
        throw new RuntimeError((getExpression.getName()), "Only instances have properties.");
     }
 
+    @Override
+    public Object visitSetExpression(SetExpression setExpression) {
+        Object object = evaluate(setExpression.getObject());
+
+        if (!(object instanceof LoxInstance)) {
+          throw new RuntimeError(setExpression.getName(), "Can only access fields on instances");
+        }
+
+        Object value = evaluate(setExpression.getValue());
+        ((LoxInstance) object).set(setExpression.getName(), value);
+        return value;
+    }
+
     private void execute(Statement statement) {
         statement.accept(this);
     }

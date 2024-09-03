@@ -268,6 +268,9 @@ public class Parser {
             if (expression instanceof VariableExpression) {
                 Token name = ((VariableExpression) expression).getToken();
                 return new AssignmentExpression(value, name);
+            } if (expression instanceof GetExpression) {
+                GetExpression get = (GetExpression) expression;
+                return new SetExpression(get.getObject(), get.getName(), value);
             }
 
             error(equals, "Invalid assignment target");
