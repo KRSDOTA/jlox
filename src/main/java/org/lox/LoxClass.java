@@ -1,6 +1,11 @@
 package org.lox;
 
-public class LoxClass {
+import org.lox.callable.LoxCallable;
+import org.lox.vistor.Interpreter;
+
+import java.util.List;
+
+public class LoxClass implements LoxCallable {
    final String name;
 
    public LoxClass(String name) {
@@ -11,4 +16,15 @@ public class LoxClass {
     public String toString() {
       return name;
    }
+
+    @Override
+    public int getArity() {
+        return 0;
+    }
+
+    @Override
+    public Object call(Interpreter interpreter, List<Object> arguments) {
+      LoxInstance instance = new LoxInstance(this);
+      return instance;
+    }
 }
