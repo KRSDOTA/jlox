@@ -72,6 +72,8 @@ public class Parser {
             methods.add(function("method"));
         }
 
+        consumeIfTokenMatchOtherwiseError(RIGHT_BRACE, "expect enclosing brace for class");
+
         return new ClassDeclaration(name, methods);
     }
 
