@@ -20,4 +20,6 @@ public interface ExpressionVisitor<T> {
   T visitLogicalExpression(LogicalExpression logicalExpression);
 
   T visitCallExpression(CallExpression callExpression);
+
+  T visitGetExpression(GetExpression getExpression);
 }

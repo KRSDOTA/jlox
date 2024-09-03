@@ -106,6 +106,12 @@ public class Resolver implements ExpressionVisitor<Void>, StatementVisitor<Void>
     }
 
     @Override
+    public Void visitGetExpression(GetExpression getExpression) {
+       resolve(getExpression.getObject());
+       return null;
+    }
+
+    @Override
     public Void visitExpressionStatement(ExpressionStatement expressionStatement) {
         resolve(expressionStatement.getStatement());
         return null;

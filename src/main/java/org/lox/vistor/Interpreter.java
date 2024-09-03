@@ -2,6 +2,7 @@ package org.lox.vistor;
 
 import org.lox.Environment;
 import org.lox.LoxClass;
+import org.lox.LoxInstance;
 import org.lox.abstractsyntaxtree.expression.*;
 import org.lox.abstractsyntaxtree.statement.*;
 import org.lox.callable.LoxCallable;
@@ -244,6 +245,16 @@ public class Interpreter implements StatementVisitor<Void>, ExpressionVisitor<Ob
         }
 
         return function.call(this, arguments);
+    }
+
+    @Override
+    public Object visitGetExpression(GetExpression getExpression) {
+       Object object = evaluate(getExpression);
+       if (object instanceof LoxInstance) {
+         return ((LoxInstance) object).get(getExpression.getName());
+       }
+
+       throw new RuntimeError((getExpression.getName()), "Only instances have properties.");
     }
 
     private void execute(Statement statement) {
