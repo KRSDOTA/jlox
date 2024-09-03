@@ -1,6 +1,7 @@
 package org.lox.vistor;
 
 import org.lox.Environment;
+import org.lox.LoxClass;
 import org.lox.abstractsyntaxtree.expression.*;
 import org.lox.abstractsyntaxtree.statement.*;
 import org.lox.callable.LoxCallable;
@@ -364,6 +365,5 @@ public class Interpreter implements StatementVisitor<Void>, ExpressionVisitor<Ob
        environment.assign(classDeclaration.getName(), klass);
        return null;
     }
-
 
 }
