@@ -2,5 +2,6 @@ package org.lox.vistor;
 
 public enum FunctionType {
     NONE,
-    FUNCTION
+    FUNCTION,
+    METHOD
 }

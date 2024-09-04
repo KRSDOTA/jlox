@@ -1,8 +1,6 @@
 package org.lox.vistor;
 
-import org.lox.abstractsyntaxtree.expression.AssignmentExpression;
-import org.lox.abstractsyntaxtree.expression.Expression;
-import org.lox.abstractsyntaxtree.expression.VariableExpression;
+import org.lox.abstractsyntaxtree.expression.*;
 import org.lox.errorhandler.JLoxErrorHandler;
 import org.lox.errorhandler.JLoxLexerErrorHandler;
 
@@ -28,6 +26,16 @@ public class SingleExpressionInterpreter extends AbstractExpressionVisitor {
 
     @Override
     public Object visitAssignmentExpr(AssignmentExpression assignmentExpression) {
+        return null;
+    }
+
+    @Override
+    public Object visitGetExpression(GetExpression getExpression) {
+        return null;
+    }
+
+    @Override
+    public Object visitSetExpression(SetExpression setExpression) {
         return null;
     }
 }

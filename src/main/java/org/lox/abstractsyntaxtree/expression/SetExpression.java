@@ -19,7 +19,7 @@ public class SetExpression extends Expression {
 
     @Override
     public <T> T accept(ExpressionVisitor<T> expressionVisitor) {
-        return null;
+        return expressionVisitor.visitSetExpression(this);
     }
 
     public Expression getObject() {

@@ -249,7 +249,7 @@ public class Interpreter implements StatementVisitor<Void>, ExpressionVisitor<Ob
 
     @Override
     public Object visitGetExpression(GetExpression getExpression) {
-       Object object = evaluate(getExpression);
+       Object object = evaluate(getExpression.getObject());
        if (object instanceof LoxInstance) {
          return ((LoxInstance) object).get(getExpression.getName());
        }
@@ -385,7 +385,13 @@ public class Interpreter implements StatementVisitor<Void>, ExpressionVisitor<Ob
     @Override
     public Void visitClassDeclaration(ClassDeclaration classDeclaration) {
        environment.define(classDeclaration.getName().lexeme(), null);
-       LoxClass klass = new LoxClass(classDeclaration.getName().lexeme());
+
+      Map<String, LoxFunction> methods = new HashMap<>();
+      for(FunctionDeclaration function : classDeclaration.getMethods()) {
+         methods.put(function.getName().lexeme(), new LoxFunction(function, environment));
+      }
+
+       LoxClass klass = new LoxClass(classDeclaration.getName().lexeme(), methods);
        environment.assign(classDeclaration.getName(), klass);
        return null;
     }

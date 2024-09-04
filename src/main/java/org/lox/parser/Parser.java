@@ -383,6 +383,7 @@ public class Parser {
                 consumeToken();
                 expression = finishCall(expression);
             } else if(matchUnconsumedToken(DOT)) {
+                consumeToken();
                Token name = consumeIfTokenMatchOtherwiseError(IDENTIFIER, "expect property name after dot");
                expression = new GetExpression(name, expression);
             } else {

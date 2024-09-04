@@ -238,6 +238,12 @@ public class Resolver implements ExpressionVisitor<Void>, StatementVisitor<Void>
     public Void visitClassDeclaration(ClassDeclaration classDeclaration) {
         declare(classDeclaration.getName());
         define(classDeclaration.getName());
+
+        for (FunctionDeclaration function : classDeclaration.getMethods()) {
+           FunctionType declaration = FunctionType.METHOD;
+           resolveFunction(function, declaration);
+        }
+
         return null;
     }
 }
