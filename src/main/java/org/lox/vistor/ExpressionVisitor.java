@@ -24,4 +24,6 @@ public interface ExpressionVisitor<T> {
   T visitGetExpression(GetExpression getExpression);
 
   T visitSetExpression(SetExpression setExpression);
+
+  T visitThisExpression(ThisExpression thisExpression);
 }

@@ -64,6 +64,11 @@ public class AstPrinter implements ExpressionVisitor<String> {
     return "";
   }
 
+  @Override
+  public String visitThisExpression(ThisExpression thisExpression) {
+    return "";
+  }
+
   private String parenthesize(String name, Expression... exprs) {
     StringBuilder builder = new StringBuilder();
 

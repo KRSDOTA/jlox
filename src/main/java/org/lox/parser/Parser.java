@@ -6,6 +6,7 @@ import org.lox.errorhandler.JLoxErrorHandler;
 import org.lox.errorhandler.JLoxParserErrorHandler;
 import org.lox.scanning.Token;
 import org.lox.scanning.TokenType;
+import org.lox.vistor.ThisExpression;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -461,6 +462,10 @@ public class Parser {
 
         if (matchUnconsumedToken(IDENTIFIER)) {
             return new VariableExpression(consumeToken());
+        }
+
+        if (matchUnconsumedToken(THIS)) {
+           return new ThisExpression(consumeToken());
         }
 
         throw error(tokens.get(current), "Expected an Expression");

@@ -270,6 +270,11 @@ public class Interpreter implements StatementVisitor<Void>, ExpressionVisitor<Ob
         return value;
     }
 
+    @Override
+    public Object visitThisExpression(ThisExpression thisExpression) {
+        return lookupVariable(thisExpression.getKeyword(), thisExpression);
+    }
+
     private void execute(Statement statement) {
         statement.accept(this);
     }

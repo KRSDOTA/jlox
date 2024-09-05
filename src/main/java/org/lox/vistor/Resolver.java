@@ -119,6 +119,12 @@ public class Resolver implements ExpressionVisitor<Void>, StatementVisitor<Void>
     }
 
     @Override
+    public Void visitThisExpression(ThisExpression thisExpression) {
+        resolveLocal(thisExpression, thisExpression.getKeyword());
+        return null;
+    }
+
+    @Override
     public Void visitExpressionStatement(ExpressionStatement expressionStatement) {
         resolve(expressionStatement.getStatement());
         return null;
@@ -239,11 +245,15 @@ public class Resolver implements ExpressionVisitor<Void>, StatementVisitor<Void>
         declare(classDeclaration.getName());
         define(classDeclaration.getName());
 
+        beginScope();
+        scopes.peek().put("this", true);
+
         for (FunctionDeclaration function : classDeclaration.getMethods()) {
            FunctionType declaration = FunctionType.METHOD;
            resolveFunction(function, declaration);
         }
 
+        endScope();
         return null;
     }
 }

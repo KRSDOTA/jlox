@@ -1,6 +1,7 @@
 package org.lox.callable;
 
 import org.lox.Environment;
+import org.lox.LoxInstance;
 import org.lox.abstractsyntaxtree.statement.FunctionDeclaration;
 import org.lox.vistor.Interpreter;
 import org.lox.vistor.Return;
@@ -33,6 +34,12 @@ public class LoxFunction implements LoxCallable {
             return returnValue.getValue();
         }
         return null;
+    }
+
+    public LoxFunction bind(LoxInstance instance) {
+       Environment environment = new Environment(closure);
+       environment.define("this", instance);
+       return new LoxFunction(functionDeclaration, environment);
     }
 
     @Override

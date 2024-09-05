@@ -38,4 +38,9 @@ public class SingleExpressionInterpreter extends AbstractExpressionVisitor {
     public Object visitSetExpression(SetExpression setExpression) {
         return null;
     }
+
+    @Override
+    public Object visitThisExpression(ThisExpression thisExpression) {
+        return null;
+    }
 }
