@@ -23,6 +23,7 @@ public class Resolver implements ExpressionVisitor<Void>, StatementVisitor<Void>
     private final Stack<Map<String, Boolean>> scopes = new Stack<>();
     private final JLoxErrorHandler errorHandler = new JLoxLexerErrorHandler();
     private FunctionType currentFunction = FunctionType.NONE;
+    private ClassType currentClass = ClassType.NONE;
 
     public Resolver(Interpreter interpreter) {
         this.interpreter = interpreter;
@@ -120,6 +121,10 @@ public class Resolver implements ExpressionVisitor<Void>, StatementVisitor<Void>
 
     @Override
     public Void visitThisExpression(ThisExpression thisExpression) {
+        if(currentClass == ClassType.NONE) {
+            errorHandler.reportError(thisExpression.getKeyword(), "Can't use 'this' outside of a class");
+            return null;
+        }
         resolveLocal(thisExpression, thisExpression.getKeyword());
         return null;
     }
@@ -242,6 +247,9 @@ public class Resolver implements ExpressionVisitor<Void>, StatementVisitor<Void>
 
     @Override
     public Void visitClassDeclaration(ClassDeclaration classDeclaration) {
+        ClassType enclosingClass = currentClass;
+        currentClass = ClassType.CLASS;
+
         declare(classDeclaration.getName());
         define(classDeclaration.getName());
 
@@ -254,6 +262,7 @@ public class Resolver implements ExpressionVisitor<Void>, StatementVisitor<Void>
         }
 
         endScope();
+        currentClass = enclosingClass;
         return null;
     }
 }
