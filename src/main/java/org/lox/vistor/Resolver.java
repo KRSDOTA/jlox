@@ -230,7 +230,7 @@ public class Resolver implements ExpressionVisitor<Void>, StatementVisitor<Void>
         if (currentFunction == FunctionType.NONE) {
           errorHandler.reportError(returnStatement.getKeyword(), "Can't return from top level code.");
         }
-        resolve(returnStatement);
+        resolve(returnStatement.getValue());
         return null;
     }
 
