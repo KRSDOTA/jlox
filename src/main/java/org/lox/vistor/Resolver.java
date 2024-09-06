@@ -241,6 +241,13 @@ public class Resolver implements ExpressionVisitor<Void>, StatementVisitor<Void>
         if (currentFunction == FunctionType.NONE) {
           errorHandler.reportError(returnStatement.getKeyword(), "Can't return from top level code.");
         }
+
+        if(returnStatement.getValue() != null){
+            if (currentFunction == FunctionType.INITALISER) {
+                errorHandler.reportError(returnStatement.getKeyword(), "can't return from an initialiser function");
+            }
+        }
+
         resolve(returnStatement.getValue());
         return null;
     }
@@ -256,9 +263,12 @@ public class Resolver implements ExpressionVisitor<Void>, StatementVisitor<Void>
         beginScope();
         scopes.peek().put("this", true);
 
-        for (FunctionDeclaration function : classDeclaration.getMethods()) {
+        for (FunctionDeclaration method : classDeclaration.getMethods()) {
            FunctionType declaration = FunctionType.METHOD;
-           resolveFunction(function, declaration);
+           if(method.getName().lexeme().equals("init")){
+               declaration = FunctionType.INITALISER;
+           }
+           resolveFunction(method, declaration);
         }
 
         endScope();

@@ -12,10 +12,12 @@ public class LoxFunction implements LoxCallable {
 
     private FunctionDeclaration functionDeclaration;
     private final Environment closure;
+    private final boolean isInitaliser;
 
-    public LoxFunction(FunctionDeclaration functionDeclaration, Environment closure) {
+    public LoxFunction(FunctionDeclaration functionDeclaration, Environment closure, boolean isInitaliser) {
         this.functionDeclaration = functionDeclaration;
         this.closure = closure;
+        this.isInitaliser = isInitaliser;
     }
 
     public int getArity() {
@@ -30,8 +32,14 @@ public class LoxFunction implements LoxCallable {
         }
         try {
             interpreter.executeBlock(functionDeclaration.getBody(), environment);
-        } catch(Return returnValue){
+        } catch(Return returnValue) {
+            if(isInitaliser){
+                return closure.getAt(0, "this");
+            }
             return returnValue.getValue();
+        }
+        if(isInitaliser) {
+            return closure.getAt(0, "this");
         }
         return null;
     }
@@ -39,7 +47,7 @@ public class LoxFunction implements LoxCallable {
     public LoxFunction bind(LoxInstance instance) {
        Environment environment = new Environment(closure);
        environment.define("this", instance);
-       return new LoxFunction(functionDeclaration, environment);
+       return new LoxFunction(functionDeclaration, environment, isInitaliser);
     }
 
     @Override

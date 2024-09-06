@@ -371,7 +371,7 @@ public class Interpreter implements StatementVisitor<Void>, ExpressionVisitor<Ob
 
     @Override
     public Void visitFunctionDeclaration(FunctionDeclaration functionDeclaration) {
-        LoxFunction function = new LoxFunction(functionDeclaration, environment);
+        LoxFunction function = new LoxFunction(functionDeclaration, environment, false);
         environment.define(functionDeclaration.getName(), function);
         return null;
     }
@@ -380,7 +380,7 @@ public class Interpreter implements StatementVisitor<Void>, ExpressionVisitor<Ob
     public Void visitReturnStatement(ReturnStatement returnStatement) {
         Object value = null;
 
-        if(returnStatement.getValue() != null){
+        if (returnStatement.getValue() != null) {
             value = evaluate(returnStatement.getValue());
         }
 
@@ -392,8 +392,8 @@ public class Interpreter implements StatementVisitor<Void>, ExpressionVisitor<Ob
        environment.define(classDeclaration.getName().lexeme(), null);
 
       Map<String, LoxFunction> methods = new HashMap<>();
-      for(FunctionDeclaration function : classDeclaration.getMethods()) {
-         methods.put(function.getName().lexeme(), new LoxFunction(function, environment));
+      for (FunctionDeclaration method : classDeclaration.getMethods()) {
+         methods.put(method.getName().lexeme(), new LoxFunction(method, environment, method.getName().lexeme().equals("init")));
       }
 
        LoxClass klass = new LoxClass(classDeclaration.getName().lexeme(), methods);
