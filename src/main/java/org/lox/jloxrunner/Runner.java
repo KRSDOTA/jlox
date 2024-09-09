@@ -61,6 +61,7 @@ public class Runner implements JLoxRunner {
 
     final Resolver resolver = new Resolver(interpreter);
     resolver.resolve(statements);
+    resolver.checkUnusedVariables();
 
     if(resolver.hadError()) {
       System.exit(-1);

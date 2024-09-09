@@ -305,7 +305,7 @@ public class Interpreter implements StatementVisitor<Void>, ExpressionVisitor<Ob
         if (distance != null) {
           environment.assignAt(distance, assignmentExpression.getToken(), value);
         } else {
-            globals.assign(assignmentExpression.getToken(), value);
+          globals.assign(assignmentExpression.getToken(), value);
         }
 
         return value;

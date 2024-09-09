@@ -6,10 +6,7 @@ import org.lox.errorhandler.JLoxErrorHandler;
 import org.lox.errorhandler.JLoxLexerErrorHandler;
 import org.lox.scanning.Token;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Stack;
+import java.util.*;
 
 /**
  * Do a pass of the generated AST and perform variable resolution,
@@ -18,15 +15,27 @@ import java.util.Stack;
  * scope to get to the correct place of resolution.
  */
 public class Resolver implements ExpressionVisitor<Void>, StatementVisitor<Void> {
-
     private final Interpreter interpreter;
     private final Stack<Map<String, Boolean>> scopes = new Stack<>();
     private final JLoxErrorHandler errorHandler = new JLoxLexerErrorHandler();
     private FunctionType currentFunction = FunctionType.NONE;
     private ClassType currentClass = ClassType.NONE;
+    private final List<VariableUsage> variableUsages = new ArrayList<>();
 
     public Resolver(Interpreter interpreter) {
         this.interpreter = interpreter;
+    }
+
+    public void checkUnusedVariables() {
+        for (VariableUsage usage: variableUsages) {
+            if (!usage.isUsed()) {
+                errorHandler.reportError(usage.getToken(), "Unused Local Variable");
+            }
+        }
+    }
+
+    public void resolve(List<Statement> statements) {
+        statements.forEach(this::resolve);
     }
 
     public boolean hadError() {
@@ -72,6 +81,11 @@ public class Resolver implements ExpressionVisitor<Void>, StatementVisitor<Void>
         if (!scopes.isEmpty() && scopes.peek().get(variableExpression.getToken().lexeme()) == Boolean.FALSE) {
             errorHandler.reportError(variableExpression.getToken(), "Can't read local variable in its own initialiser");
         }
+       Optional<VariableUsage> usage = variableUsages.stream()
+                .filter(variableUsage -> variableUsage.getLexeme().equals(variableExpression.getToken().lexeme()))
+                        .findFirst();
+        usage.ifPresent((variableUsage -> variableUsage.setUsed(true)));
+
         resolveLocal(variableExpression, variableExpression.getToken());
         return null;
     }
@@ -148,6 +162,7 @@ public class Resolver implements ExpressionVisitor<Void>, StatementVisitor<Void>
            resolve(variableStatement.getExpression());
        }
        define(variableStatement.getTokenName());
+       variableUsages.add(new VariableUsage(variableStatement.getTokenName()));
        return null;
     }
 
@@ -183,10 +198,6 @@ public class Resolver implements ExpressionVisitor<Void>, StatementVisitor<Void>
 
     private void endScope() {
         scopes.pop();
-    }
-
-    public void resolve(List<Statement> statements) {
-       statements.forEach(this::resolve);
     }
 
     private void resolve(Statement statement) {
