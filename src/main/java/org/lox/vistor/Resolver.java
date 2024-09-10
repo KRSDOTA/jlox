@@ -282,6 +282,15 @@ public class Resolver implements ExpressionVisitor<Void>, StatementVisitor<Void>
            resolveFunction(method, declaration);
         }
 
+       if(classDeclaration.getSuperclass() != null && classDeclaration.getSuperclass().getToken().lexeme().equals(classDeclaration.getName().lexeme()))  {
+          errorHandler.reportError(classDeclaration.getName(), "can't have a class inherit from itself");
+       }
+
+
+        if(classDeclaration.getSuperclass() != null){
+           resolve(classDeclaration.getSuperclass());
+        }
+
         endScope();
         currentClass = enclosingClass;
         return null;

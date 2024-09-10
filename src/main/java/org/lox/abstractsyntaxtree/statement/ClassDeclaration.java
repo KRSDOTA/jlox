@@ -1,5 +1,6 @@
 package org.lox.abstractsyntaxtree.statement;
 
+import org.lox.abstractsyntaxtree.expression.VariableExpression;
 import org.lox.scanning.Token;
 import org.lox.vistor.StatementVisitor;
 
@@ -8,10 +9,12 @@ import java.util.List;
 public class ClassDeclaration extends Statement {
     private final Token name;
     private final List<FunctionDeclaration> methods;
+    private final VariableExpression superclass;
 
-    public ClassDeclaration(Token name, List<FunctionDeclaration> methods) {
+    public ClassDeclaration(Token name, List<FunctionDeclaration> methods, VariableExpression superclass) {
         this.name = name;
         this.methods = methods;
+        this.superclass = superclass;
     }
 
     @Override
@@ -27,4 +30,7 @@ public class ClassDeclaration extends Statement {
         return methods;
     }
 
+    public VariableExpression getSuperclass() {
+        return superclass;
+    }
 }

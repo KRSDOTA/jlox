@@ -68,6 +68,13 @@ public class Parser {
         Token name = consumeIfTokenMatchOtherwiseError(IDENTIFIER, "expect class name");
         consumeIfTokenMatchOtherwiseError(LEFT_BRACE, "expected a '{' after class name");
 
+        VariableExpression superClassDefinition = null;
+        if(matchUnconsumedToken(LESS)) {
+           consumeToken();
+           consumeIfTokenMatchOtherwiseError(IDENTIFIER, "No super class name specified");
+           superClassDefinition = new VariableExpression(mostRecentlyConsumedToken());
+        }
+
         List<FunctionDeclaration> methods = new ArrayList<>();
         while(!doesNextTokenMatch(RIGHT_BRACE) && !isAtEndOfTokenStream()) {
             methods.add(function("method"));
@@ -75,7 +82,7 @@ public class Parser {
 
         consumeIfTokenMatchOtherwiseError(RIGHT_BRACE, "expect enclosing brace for class");
 
-        return new ClassDeclaration(name, methods);
+        return new ClassDeclaration(name, methods, superClassDefinition);
     }
 
     private FunctionDeclaration function(String kind) {
