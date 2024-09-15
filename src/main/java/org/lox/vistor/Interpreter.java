@@ -1,6 +1,7 @@
 package org.lox.vistor;
 
 import org.lox.Environment;
+import org.lox.Lox;
 import org.lox.LoxClass;
 import org.lox.LoxInstance;
 import org.lox.abstractsyntaxtree.expression.*;
@@ -249,12 +250,12 @@ public class Interpreter implements StatementVisitor<Void>, ExpressionVisitor<Ob
 
     @Override
     public Object visitGetExpression(GetExpression getExpression) {
-       Object object = evaluate(getExpression.getObject());
-       if (object instanceof LoxInstance) {
-         return ((LoxInstance) object).get(getExpression.getName());
-       }
+        Object object = evaluate(getExpression.getObject());
+        if (object instanceof LoxInstance) {
+            return ((LoxInstance) object).get(getExpression.getName());
+        }
 
-       throw new RuntimeError((getExpression.getName()), "Only instances have properties.");
+        throw new RuntimeError((getExpression.getName()), "Only instances have properties.");
     }
 
     @Override
@@ -262,7 +263,7 @@ public class Interpreter implements StatementVisitor<Void>, ExpressionVisitor<Ob
         Object object = evaluate(setExpression.getObject());
 
         if (!(object instanceof LoxInstance)) {
-          throw new RuntimeError(setExpression.getName(), "Can only access fields on instances");
+            throw new RuntimeError(setExpression.getName(), "Can only access fields on instances");
         }
 
         Object value = evaluate(setExpression.getValue());
@@ -273,6 +274,20 @@ public class Interpreter implements StatementVisitor<Void>, ExpressionVisitor<Ob
     @Override
     public Object visitThisExpression(ThisExpression thisExpression) {
         return lookupVariable(thisExpression.getKeyword(), thisExpression);
+    }
+
+    @Override
+    public Object visitSuperExpression(SuperExpression superExpression) {
+        int distance = locals.get(superExpression);
+        LoxClass superClass = (LoxClass) environment.getAt(distance, "super");
+        LoxInstance instance = (LoxInstance) environment.getAt(distance - 1, "this");
+        LoxFunction method = superClass.findMethod(superExpression.getMethod().lexeme());
+
+        if (method == null) {
+            throw new RuntimeError(superExpression.getMethod(), "method" + superExpression.getMethod().lexeme() + "does not exist on super class");
+        }
+
+        return method.bind(instance);
     }
 
     private void execute(Statement statement) {
@@ -291,7 +306,7 @@ public class Interpreter implements StatementVisitor<Void>, ExpressionVisitor<Ob
     private Object lookupVariable(Token name, Expression expression) {
         Integer distance = locals.get(expression);
         if (distance != null) {
-           return environment.getAt(distance, name.lexeme());
+            return environment.getAt(distance, name.lexeme());
         } else {
             return globals.getValue(name);
         }
@@ -303,9 +318,9 @@ public class Interpreter implements StatementVisitor<Void>, ExpressionVisitor<Ob
 
         Integer distance = locals.get(assignmentExpression);
         if (distance != null) {
-          environment.assignAt(distance, assignmentExpression.getToken(), value);
+            environment.assignAt(distance, assignmentExpression.getToken(), value);
         } else {
-          globals.assign(assignmentExpression.getToken(), value);
+            globals.assign(assignmentExpression.getToken(), value);
         }
 
         return value;
@@ -345,7 +360,7 @@ public class Interpreter implements StatementVisitor<Void>, ExpressionVisitor<Ob
         Object conditionalValue = evaluate(ifStatement.getCondition());
         if (isTruthy(conditionalValue)) {
             execute(ifStatement.getThenBranch());
-        } else if(ifStatement.getElseBranch() != null){
+        } else if (ifStatement.getElseBranch() != null) {
             execute(ifStatement.getElseBranch());
         }
         return null;
@@ -389,16 +404,34 @@ public class Interpreter implements StatementVisitor<Void>, ExpressionVisitor<Ob
 
     @Override
     public Void visitClassDeclaration(ClassDeclaration classDeclaration) {
-       environment.define(classDeclaration.getName().lexeme(), null);
+        Object superclass = null;
+        if (classDeclaration.getSuperclass() != null) {
+            superclass = evaluate(classDeclaration.getSuperclass());
+            if (!(superclass instanceof LoxClass)) {
+                throw new RuntimeError(classDeclaration.getSuperclass().getToken(), "Superclass must be a class");
+            }
+        }
 
-      Map<String, LoxFunction> methods = new HashMap<>();
-      for (FunctionDeclaration method : classDeclaration.getMethods()) {
-         methods.put(method.getName().lexeme(), new LoxFunction(method, environment, method.getName().lexeme().equals("init")));
-      }
+        environment.define(classDeclaration.getName().lexeme(), null);
 
-       LoxClass klass = new LoxClass(classDeclaration.getName().lexeme(), methods);
-       environment.assign(classDeclaration.getName(), klass);
-       return null;
+        if (classDeclaration.getSuperclass() != null) {
+            environment = new Environment(environment);
+            environment.define("super", classDeclaration.getSuperclass());
+        }
+
+        Map<String, LoxFunction> methods = new HashMap<>();
+        for (FunctionDeclaration method : classDeclaration.getMethods()) {
+            methods.put(method.getName().lexeme(), new LoxFunction(method, environment, method.getName().lexeme().equals("init")));
+        }
+
+        LoxClass klass = new LoxClass(classDeclaration.getName().lexeme(), (LoxClass) superclass, methods);
+
+        if (superclass != null) {
+            environment = environment.getEnclosedScope();
+        }
+
+        environment.assign(classDeclaration.getName(), klass);
+        return null;
     }
 
 }

@@ -8,42 +8,47 @@ import java.util.List;
 import java.util.Map;
 
 public class LoxClass implements LoxCallable {
-   final String name;
-   final Map<String, LoxFunction> methods;
+    final String name;
+    final LoxClass superclass;
+    final Map<String, LoxFunction> methods;
 
-   public LoxClass(String name, Map<String, LoxFunction> methods) {
-       this.name = name;
-       this.methods = methods;
-   }
+    public LoxClass(String name, LoxClass superclass, Map<String, LoxFunction> methods) {
+        this.name = name;
+        this.superclass = superclass;
+        this.methods = methods;
+    }
 
-   public LoxFunction findMethod(String name) {
-      if(methods.containsKey(name)) {
-          return methods.get(name);
-      }
-      return null;
-   }
+    public LoxFunction findMethod(String name) {
+        if (methods.containsKey(name)) {
+            return methods.get(name);
+        }
+        if (superclass != null) {
+            return superclass.findMethod(name);
+        }
+        return null;
+    }
 
-   @Override
+    @Override
     public String toString() {
-      return name;
-   }
+        return name;
+    }
 
     @Override
     public int getArity() {
-       LoxFunction initaliser = findMethod("init");
-       if(initaliser == null) {
-           return 0;
-       }
-       return initaliser.getArity();
+        LoxFunction initaliser = findMethod("init");
+        if (initaliser == null) {
+            return 0;
+        }
+        return initaliser.getArity();
     }
 
     @Override
     public Object call(Interpreter interpreter, List<Object> arguments) {
-      LoxInstance instance = new LoxInstance(this);
-      LoxFunction initialiser = findMethod("init");
-      if (initialiser != null) {
-          initialiser.bind(instance).call(interpreter, arguments);
-      }
-      return instance;
+        LoxInstance instance = new LoxInstance(this);
+        LoxFunction initialiser = findMethod("init");
+        if (initialiser != null) {
+            initialiser.bind(instance).call(interpreter, arguments);
+        }
+        return instance;
     }
 }

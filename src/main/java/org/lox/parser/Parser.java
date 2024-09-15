@@ -18,9 +18,9 @@ public class Parser {
     private static class ParseError extends RuntimeException {
     }
 
-    private final static TokenType[] EQUALITY_OPERATORS = new TokenType[] { BANG_EQUAL, EQUAL_EQUAL };
-    private final static TokenType[] INEQUALITY_OPERATORS = new TokenType[] { GREATER, GREATER_EQUAL, LESS,
-            LESS_EQUAL };
+    private final static TokenType[] EQUALITY_OPERATORS = new TokenType[]{BANG_EQUAL, EQUAL_EQUAL};
+    private final static TokenType[] INEQUALITY_OPERATORS = new TokenType[]{GREATER, GREATER_EQUAL, LESS,
+            LESS_EQUAL};
 
     private final JLoxErrorHandler jLoxErrorHandler = new JLoxParserErrorHandler();
 
@@ -46,8 +46,8 @@ public class Parser {
     private Statement declaration() {
         try {
             if (matchUnconsumedToken(CLASS)) {
-              consumeToken();
-              return classDeclaration();
+                consumeToken();
+                return classDeclaration();
             }
             if (matchUnconsumedToken(FUN)) {
                 consumeToken();
@@ -69,14 +69,14 @@ public class Parser {
         consumeIfTokenMatchOtherwiseError(LEFT_BRACE, "expected a '{' after class name");
 
         VariableExpression superClassDefinition = null;
-        if(matchUnconsumedToken(LESS)) {
-           consumeToken();
-           consumeIfTokenMatchOtherwiseError(IDENTIFIER, "No super class name specified");
-           superClassDefinition = new VariableExpression(mostRecentlyConsumedToken());
+        if (matchUnconsumedToken(LESS)) {
+            consumeToken();
+            consumeIfTokenMatchOtherwiseError(IDENTIFIER, "No super class name specified");
+            superClassDefinition = new VariableExpression(mostRecentlyConsumedToken());
         }
 
         List<FunctionDeclaration> methods = new ArrayList<>();
-        while(!doesNextTokenMatch(RIGHT_BRACE) && !isAtEndOfTokenStream()) {
+        while (!doesNextTokenMatch(RIGHT_BRACE) && !isAtEndOfTokenStream()) {
             methods.add(function("method"));
         }
 
@@ -131,7 +131,7 @@ public class Parser {
             consumeToken();
             return printStatement();
         }
-        if(matchUnconsumedToken(RETURN)){
+        if (matchUnconsumedToken(RETURN)) {
             consumeToken();
             return returnStatement();
         }
@@ -202,9 +202,9 @@ public class Parser {
     }
 
     private Statement returnStatement() {
-        Token keyword = this.tokens.get(current-1);
+        Token keyword = this.tokens.get(current - 1);
         Expression value = null;
-        if(!doesNextTokenMatch(SEMICOLON)){
+        if (!doesNextTokenMatch(SEMICOLON)) {
             value = expression();
         }
 
@@ -276,7 +276,8 @@ public class Parser {
             if (expression instanceof VariableExpression) {
                 Token name = ((VariableExpression) expression).getToken();
                 return new AssignmentExpression(value, name);
-            } if (expression instanceof GetExpression) {
+            }
+            if (expression instanceof GetExpression) {
                 GetExpression get = (GetExpression) expression;
                 return new SetExpression(get.getObject(), get.getName(), value);
             }
@@ -390,10 +391,10 @@ public class Parser {
             if (matchUnconsumedToken(LEFT_PAREN)) {
                 consumeToken();
                 expression = finishCall(expression);
-            } else if(matchUnconsumedToken(DOT)) {
+            } else if (matchUnconsumedToken(DOT)) {
                 consumeToken();
-               Token name = consumeIfTokenMatchOtherwiseError(IDENTIFIER, "expect property name after dot");
-               expression = new GetExpression(name, expression);
+                Token name = consumeIfTokenMatchOtherwiseError(IDENTIFIER, "expect property name after dot");
+                expression = new GetExpression(name, expression);
             } else {
                 break;
             }
@@ -472,7 +473,14 @@ public class Parser {
         }
 
         if (matchUnconsumedToken(THIS)) {
-           return new ThisExpression(consumeToken());
+            return new ThisExpression(consumeToken());
+        }
+
+        if (matchUnconsumedToken(SUPER)) {
+            Token keyword = consumeToken();
+            consumeIfTokenMatchOtherwiseError(DOT, "must use '.' when referring to super method access");
+            Token method = consumeIfTokenMatchOtherwiseError(IDENTIFIER, "Must refer to a method call");
+            return new SuperExpression(keyword, method);
         }
 
         throw error(tokens.get(current), "Expected an Expression");

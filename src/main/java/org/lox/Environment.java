@@ -28,6 +28,10 @@ public class Environment {
    declarationLookup.put(string, value);
   }
 
+  public Environment getEnclosedScope() {
+    return enclosedScope.get();
+  }
+
   public Object getValue(Token token) {
     if(declarationLookup.containsKey(token.lexeme())){
       return declarationLookup.get(token.lexeme());

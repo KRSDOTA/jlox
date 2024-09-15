@@ -26,4 +26,6 @@ public interface ExpressionVisitor<T> {
   T visitSetExpression(SetExpression setExpression);
 
   T visitThisExpression(ThisExpression thisExpression);
+
+  T visitSuperExpression(SuperExpression superExpression);
 }
