@@ -135,7 +135,7 @@ public class Resolver implements ExpressionVisitor<Void>, StatementVisitor<Void>
 
     @Override
     public Void visitThisExpression(ThisExpression thisExpression) {
-        if(currentClass == ClassType.NONE) {;
+        if(currentClass == ClassType.NONE) {
             errorHandler.reportError(thisExpression.getKeyword(), "Can't use 'this' outside of a class");
             return null;
         }
@@ -145,6 +145,11 @@ public class Resolver implements ExpressionVisitor<Void>, StatementVisitor<Void>
 
     @Override
     public Void visitSuperExpression(SuperExpression superExpression) {
+        if(currentClass == ClassType.NONE) {
+            errorHandler.reportError(superExpression.getKeyword(), "Can't use \"super\" outside of class");
+        } else if( currentClass != ClassType.SUBCLASS) {
+            errorHandler.reportError(superExpression.getKeyword(), "Can't use 'super' outside of a subclass");
+        }
         resolveLocal(superExpression, superExpression.getKeyword());
         return null;
     }
@@ -278,6 +283,7 @@ public class Resolver implements ExpressionVisitor<Void>, StatementVisitor<Void>
         define(classDeclaration.getName());
 
         if(classDeclaration.getSuperclass() != null) {
+            currentClass = ClassType.SUBCLASS;
             resolve(classDeclaration.getSuperclass());
             beginScope();
             scopes.peek().put("super", true);
